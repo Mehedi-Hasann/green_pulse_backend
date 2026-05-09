@@ -38,7 +38,7 @@ console.log(data);
       }
     })
 
-    return memberTx;
+    // return memberTx;
   })
   return {
     ...data,
