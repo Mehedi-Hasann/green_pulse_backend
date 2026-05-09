@@ -1,0 +1,17 @@
+enum Role{
+  MEMBER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus{
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum Gender{
+  MALE
+  FEMALE
+  OTHERS
+}

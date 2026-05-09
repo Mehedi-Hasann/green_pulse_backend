@@ -1,0 +1,137 @@
+model User {
+  id                 String     @id @default(uuid())
+  name               String
+  email              String
+  emailVerified      Boolean    @default(false)
+  role               Role       @default(MEMBER)
+  status             UserStatus @default(ACTIVE)
+  needPasswordChange Boolean    @default(true)
+  isDeleted          Boolean    @default(false)
+  deletedAt          DateTime?
+  image              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  member             Member?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Category {
+  id String @id @default(uuid())
+
+  name        String   @unique
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive], name: "idx_category_isActive")
+  @@index([name], name: "idx_category_name")
+  @@map("category")
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHERS
+}
+
+model Member {
+  id String @id @default(uuid())
+
+  name  String
+  email String @unique
+
+  totalPoints   Float     @default(0.0)
+  profilePhoto  String?
+  contactNumber String?
+  gender        Gender?
+  isDeleted     Boolean   @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([isDeleted], name: "idx_member_isDeleted")
+  @@index([totalPoints], name: "idx_member_totalPoints")
+  @@map("member")
+}
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
