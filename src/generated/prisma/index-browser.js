@@ -120,6 +120,18 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  email: 'email',
+  profilePhoto: 'profilePhoto',
+  phone: 'phone',
+  gender: 'gender',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -180,10 +192,23 @@ exports.Prisma.CategoryScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ChallengeScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  title: 'title',
+  description: 'description',
+  duration: 'duration',
+  status: 'status',
+  pointsPerDay: 'pointsPerDay',
+  isPaid: 'isPaid',
+  price: 'price',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.MemberScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  email: 'email',
   totalPoints: 'totalPoints',
   profilePhoto: 'profilePhoto',
   contactNumber: 'contactNumber',
@@ -193,6 +218,53 @@ exports.Prisma.MemberScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
+};
+
+exports.Prisma.MemberChallengeScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  challengeId: 'challengeId',
+  isVerified: 'isVerified',
+  pointsAchieved: 'pointsAchieved',
+  joinedAt: 'joinedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  memberChallengeId: 'memberChallengeId',
+  amount: 'amount',
+  transactionId: 'transactionId',
+  status: 'status',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubmissionScalarFieldEnum = {
+  id: 'id',
+  memberChallengeId: 'memberChallengeId',
+  submittedDate: 'submittedDate',
+  memberId: 'memberId',
+  challengeId: 'challengeId',
+  proofs: 'proofs',
+  status: 'status',
+  feedBack: 'feedBack',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SuperAdminScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  email: 'email',
+  profilePhoto: 'profilePhoto',
+  phone: 'phone',
+  gender: 'gender',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -209,6 +281,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Gender = exports.$Enums.Gender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+  OTHERS: 'OTHERS'
+};
+
 exports.Role = exports.$Enums.Role = {
   MEMBER: 'MEMBER',
   ADMIN: 'ADMIN',
@@ -221,19 +299,39 @@ exports.UserStatus = exports.$Enums.UserStatus = {
   DELETED: 'DELETED'
 };
 
-exports.Gender = exports.$Enums.Gender = {
-  MALE: 'MALE',
-  FEMALE: 'FEMALE',
-  OTHERS: 'OTHERS'
+exports.ChallengeStatus = exports.$Enums.ChallengeStatus = {
+  UPCOMING: 'UPCOMING',
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+};
+
+exports.SubmissionStatus = exports.$Enums.SubmissionStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
 };
 
 exports.Prisma.ModelName = {
+  Admin: 'Admin',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
   Category: 'Category',
-  Member: 'Member'
+  Challenge: 'Challenge',
+  Member: 'Member',
+  MemberChallenge: 'MemberChallenge',
+  Payment: 'Payment',
+  Submission: 'Submission',
+  SuperAdmin: 'SuperAdmin'
 };
 
 /**

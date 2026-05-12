@@ -14,6 +14,8 @@ model User {
   sessions            Session[]
   accounts            Account[]
   member              Member?
+  admin               Admin?
+  superAdmin          SuperAdmin?
 
   @@unique([email])
   @@map("user")

@@ -1,52 +1,300 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import status from "http-status";
 import { Role } from "../../../generated/prisma";
+import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { UserStatus } from "../../../generated/prisma";
+import { tokenUtils } from "../../utils/token";
+import { IChangePassword, ILoginUserPayload, IRegisterMemberPayload, IRequestUser } from "./auth.interface";
 
-interface IRegisterMemberPayload {
-  name : string,
-  email : string,
-  password : string,
-  role ?: string,
-  image ?: string
-}
 
-const registerMember = async(payload : IRegisterMemberPayload) => {
-  console.log(payload);
-  const {name, email,password} = payload;
+const registerMember = async (payload: IRegisterMemberPayload) => {
+  const { name, email, password, image, role } = payload;
 
   const data = await auth.api.signUpEmail({
-    body : {
+    body: {
       name,
       email,
       password,
-      role : Role.MEMBER
-    }
-  })
-console.log(data);
-  if(!data.user){
-    throw new Error("Failed to register User");
+      role: role,
+      image
+    },
+  });
+
+  if (!data?.user) {
+    throw new AppError(status.INTERNAL_SERVER_ERROR, "User Registration Failed");
   }
 
-  const member = await prisma.$transaction(async(tx) => {
+  try {
+    const member = await prisma.$transaction(async (tx) => {
+        if(data.user.role===Role.MEMBER){
+          const memberTx = await tx.member.create({
+            data: {
+              userId: data.user.id,
+              name: data.user.name,
+              profilePhoto : data.user.image ?? null
+            },
+          });
 
-    const memberTx = await tx.member.create({
-      data : {
-        userId : data.user.id,
-        name : data.user.name,
-        email : data.user.email
-      }
-    })
+          return memberTx;
+        }
+        if(data.user.role===Role.ADMIN){
+          const adminTx = await tx.admin.create({
+            data: {
+              userId: data.user.id,
+              name: data.user.name,
+              email : data.user.email,
+              profilePhoto : data.user.image ?? null
+            },
+          });
 
-    return memberTx;
-  })
+          return adminTx;
+        }
+    });
+
+    const accessToken = tokenUtils.getAccessToken({
+      userId: data.user.id,
+      role: data.user.role,
+      name: data.user.name,
+      email: data.user.email,
+      status: data.user.status,
+      isDeleted: data.user.isDeleted,
+      emailVerified: data.user.emailVerified,
+    });
+
+    return {
+      ...data,
+      accessToken,
+      member,
+    };
+  } catch (error: any) {
+    console.log("Transaction Error : ", error);
+    await prisma.user.delete({
+      where: {
+        id: data.user.id,
+      },
+    });
+    throw error;
+  }
+};
+
+const loginUser = async (payload: ILoginUserPayload) => {
+  const { email, password } = payload;
+  const data = await auth.api.signInEmail({
+    body: {
+      email,
+      password,
+    },
+  });
+
+  if (!data?.user) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid credentials");
+  }
+
+  if (data.user.status === UserStatus.BLOCKED) {
+    throw new AppError(status.FORBIDDEN, "User is blocked");
+  }
+
+  if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
+    throw new AppError(status.NOT_FOUND, "User is deleted");
+  }
+
+  const accessToken = tokenUtils.getAccessToken({
+    userId: data.user.id,
+    role: data.user.role,
+    name: data.user.name,
+    email: data.user.email,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
   return {
     ...data,
-    member,
+    accessToken,
   };
+};
+
+const getMe = async(user : IRequestUser) => {
+  const isUserExists = await prisma.user.findUnique({
+    where : {
+      id : user.userId
+    },
+    include : {
+      member : true,
+      admin : true,
+      superAdmin : true
+    }
+  })
+
+  if(!isUserExists){
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
 }
 
+const changePassword = async(payload : IChangePassword, sessionToken : string) => {
+  const session = await auth.api.getSession({
+    headers : new Headers({
+      Authorization : `Bearer ${sessionToken}`
+    })
+  })
+
+  if(!session){
+    throw new AppError(status.UNAUTHORIZED, "Invalid session token");
+  }
+
+  const {currentPassword, newPassword} = payload;
+
+  const result = await auth.api.changePassword({
+    body : {
+      currentPassword,
+      newPassword,
+      revokeOtherSessions : true,
+    },
+    headers : new Headers({
+      Authorization : `Bearer ${sessionToken}`
+    })
+  })
+
+  if(session.user.needPasswordChange){
+      await prisma.user.update({
+        where : {
+          id : session.user.id
+        },
+        data : {
+          needPasswordChange : false
+        }
+      })
+  }
+
+  return result;
+
+}
+
+const logoutUser = async(sessionToken : string) => {
+  const result = await auth.api.signOut({
+    headers : new Headers({
+      Authorization : `Bearer ${sessionToken}`
+    })
+  })
+
+  return result;
+}
+
+const verifyEmail = async(email : string, otp: string) => {
+  const result = await auth.api.verifyEmailOTP({
+    body: {
+      email,
+      otp
+    }
+  })
+
+  if(result.status && !result.user.emailVerified){
+    await prisma.user.update({
+      where : {
+        email
+      },
+      data : {
+        emailVerified : true
+      }
+    })
+  }
+}
+
+const forgetPassword = async(email : string) => {
+  const isUserExists = await prisma.user.findUnique({
+    where : {
+      email
+    }
+  })
+
+  if(!isUserExists?.emailVerified){
+    throw new AppError(status.NOT_FOUND, "User not Found");
+  }
+
+  if(isUserExists.isDeleted || isUserExists.status === UserStatus.DELETED){
+    throw new AppError(status.NOT_FOUND, "User not Found");
+  }
+
+  await auth.api.requestPasswordResetEmailOTP({
+    body: {
+      email
+    }
+  })
+}
+
+const resetPassword = async(email: string, otp: string, newPassword: string) => {
+  const isUserExists = await prisma.user.findUnique({
+    where : {
+      email
+    }
+  })
+
+  if(!isUserExists?.emailVerified){
+    throw new AppError(status.NOT_FOUND, "User not Found");
+  }
+
+  if(isUserExists.isDeleted || isUserExists.status === UserStatus.DELETED){
+    throw new AppError(status.NOT_FOUND, "User not Found");
+  }
+
+  await auth.api.resetPasswordEmailOTP({
+    body : {
+      email,
+      otp,
+      password : newPassword
+    }
+  })
+
+  if(isUserExists.needPasswordChange){
+    await prisma.user.update({
+      where : {
+        email
+      },
+      data : {
+        needPasswordChange : false
+      }
+    })
+  }
+
+  await prisma.session.deleteMany({
+    where : {
+      userId : isUserExists.id
+    }
+  })
+}
+
+const googleLoginSuccess = async(session: Record<string,any>) => {
+  const isMemberExists = await prisma.member.findUnique({
+    where : {
+      userId : session.user.id
+    }
+  })
+
+  if(!isMemberExists){
+    await prisma.member.create({
+      data : {
+        userId : session.user.id,
+        name : session.user.name
+      }
+    })
+  }
+
+    const accessToken = tokenUtils.getAccessToken({
+      userId: session.user.id,
+      role: session.user.role,
+      name: session.user.name,
+      email: session.user.email,
+      status: session.user.status,
+      isDeleted: session.user.isDeleted,
+      emailVerified: session.user.emailVerified,
+    });
+
+    return {accessToken};
+    
+}
 
 export const AuthServices = {
-  registerMember
-}
+  registerMember, loginUser, getMe, changePassword, logoutUser, verifyEmail, forgetPassword, resetPassword, googleLoginSuccess
+} 

@@ -1,11 +1,13 @@
 model Category {
-  id  String  @id  @default(uuid())
+  id           String     @id  @default(uuid())
 
-  name   String    @unique
+  challenge    Challenge[]
+
+  name         String     @unique
   description  String
   isActive     Boolean    @default(true)
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime    @updatedAt
+  updatedAt    DateTime   @updatedAt
 
   @@index([isActive], name : "idx_category_isActive")
   @@index([name], name : "idx_category_name")

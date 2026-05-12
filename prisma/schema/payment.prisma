@@ -1,0 +1,18 @@
+model Payment {
+  id                 String            @id @default(uuid())
+
+  memberChallengeId  String            @unique
+  memberChallenge    MemberChallenge   @relation(fields: [memberChallengeId], references: [id], onDelete: Cascade)
+
+  amount             Float
+  transactionId      String            @unique
+
+  status             PaymentStatus     @default(PENDING)
+
+  paidAt             DateTime?
+
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@map("payment")
+}
