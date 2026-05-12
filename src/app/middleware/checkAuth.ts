@@ -31,7 +31,6 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
       })
 
       const user = sessionExists?.user;
-      console.log(sessionExists);
       if(!user){
         throw new AppError(status.INTERNAL_SERVER_ERROR, "Failed to fetched User using sessionToken")
       }

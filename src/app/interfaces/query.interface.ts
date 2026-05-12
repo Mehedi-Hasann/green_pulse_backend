@@ -38,8 +38,9 @@ export interface IQueryParams {
     sortOrder?: 'asc' | 'desc';
     fields?: string;
     includes?: string;
-    [key: string] : string | undefined;
+    [key: string] : any;
 }
+
 
 export interface IQueryConfig {
     searchableFields?: string[];

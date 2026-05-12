@@ -12,10 +12,10 @@ router.patch(
   validateRequest(MemberValidations.updateMemberSchema),
   MemberControllers.updateMember
 );//ok
-router.delete("/:id", MemberControllers.deleteMember);
+router.delete("/:id", MemberControllers.deleteMember);//ok
 
-router.get("/:id/challenges", MemberControllers.getMemberChallenges);
-router.get("/:id/submissions", MemberControllers.getMemberSubmissions);
-router.get("/:id/payments", MemberControllers.getMemberPayments);
+router.get("/:id/challenges", MemberControllers.getMemberChallenges);//ok
+router.get("/:id/submissions", MemberControllers.getMemberSubmissions);//ok
+router.get("/:id/payments", MemberControllers.getMemberPayments);//ok
 
 export const MemberRoutes = router;
