@@ -51,6 +51,18 @@ const registerMember = async (payload: IRegisterMemberPayload) => {
 
           return adminTx;
         }
+        if(data.user.role===Role.SUPER_ADMIN){
+          const superAdminTx = await tx.superAdmin.create({
+            data: {
+              userId: data.user.id,
+              name: data.user.name,
+              email : data.user.email,
+              profilePhoto : data.user.image ?? null
+            },
+          });
+
+          return superAdminTx;
+        }
     });
 
     const accessToken = tokenUtils.getAccessToken({

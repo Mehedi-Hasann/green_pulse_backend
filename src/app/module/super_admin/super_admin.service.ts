@@ -1,0 +1,473 @@
+
+import { Prisma, Role, UserStatus, SubmissionStatus } from "../../../generated/prisma";
+import { prisma } from "../../lib/prisma";
+import AppError from "../../errorHelpers/AppError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { IQueryParams } from "../../interfaces/query.interface";
+import status from "http-status";
+
+
+const getAllAdmins = async (queryParams: IQueryParams) => {
+  const adminQueryBuilder = new QueryBuilder(prisma.admin, queryParams, {
+    searchableFields: ["name", "email", "phone"],
+    filterableFields: ["gender"],
+  });
+
+  return await adminQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .include({ user: true })
+    .execute();
+};
+
+const getAdminById = async (id: string) => {
+  const admin = await prisma.admin.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+  if (!admin) throw new AppError(status.NOT_FOUND, "Admin not found");
+  return admin;
+};
+
+const updateAdmin = async (id: string, payload: Partial<Prisma.AdminUpdateInput>) => {
+  const admin = await prisma.admin.findUnique({ where: { id } });
+  if (!admin) throw new AppError(status.NOT_FOUND, "Admin not found");
+
+  return await prisma.admin.update({
+    where: { id },
+    data: payload,
+  });
+};
+
+const deleteAdmin = async (id: string) => {
+  const admin = await prisma.admin.findUnique({ where: { id } });
+  if (!admin) throw new AppError(status.NOT_FOUND, "Admin not found");
+
+  // Delete both Admin profile and User account
+  return await prisma.$transaction(async (tx) => {
+    await tx.admin.delete({ where: { id } });
+    await tx.user.update({ where: { id: admin.userId }, data : {isDeleted : true,status:UserStatus.DELETED} });
+  });
+};
+
+// --- Member Management ---
+
+const getAllMembers = async (queryParams: IQueryParams) => {
+  const memberQueryBuilder = new QueryBuilder(prisma.member, queryParams, {
+    searchableFields: ["name", "contactNumber"],
+    filterableFields: ["gender", "isDeleted"],
+  });
+
+  return await memberQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .include({ user: true })
+    .execute();
+};
+
+const getMemberById = async (id: string) => {
+  const member = await prisma.member.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+  if (!member) throw new AppError(status.NOT_FOUND, "Member not found");
+  return member;
+};
+
+const updateMember = async (id: string, payload: any) => {
+  const member = await prisma.member.findUnique({ where: { id } });
+  if (!member) throw new AppError(status.NOT_FOUND, "Member not found");
+
+  const result = await prisma.member.update({
+    where: { id },
+    data: payload,
+  });
+
+  await prisma.user.update({
+    where : {
+      id : result.userId
+    },
+    data : payload
+  })
+
+  return result;
+};
+
+const deleteMember = async (id: string) => {
+  const member = await prisma.member.findUnique({ where: { id } });
+  if (!member) throw new AppError(status.NOT_FOUND, "Member not found");
+
+  await prisma.member.delete({
+    where : {
+      id
+    }
+  })
+
+  // Usually soft delete or block
+  return await prisma.user.update({
+    where: { id: member.userId },
+    data: { status: UserStatus.DELETED, isDeleted : true },
+  });
+};
+
+// --- User Control ---
+
+const updateUserStatus = async (userId: string, userStatus: UserStatus) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError(status.NOT_FOUND, "User not found");
+
+  const result =  await prisma.user.update({
+    where: { id: userId },
+    data: { status: userStatus },
+  });
+  if(!result){
+    throw new AppError(status.NOT_FOUND, "User is not Exists")
+  }
+
+  if(result.role===Role.ADMIN && userStatus === UserStatus.DELETED){
+    await prisma.admin.delete({
+      where : {
+        userId : result.id
+      }
+    })
+  }
+  else if(result.role===Role.MEMBER && userStatus === UserStatus.DELETED){
+    await prisma.member.deleteMany({
+      where : {
+        userId : result.id
+      }
+    })
+  }
+  if(userStatus === UserStatus.DELETED){
+    await prisma.user.update({
+      where : {
+        id : userId
+      },
+      data : {
+        isDeleted : true
+      }
+    })
+  }
+  
+
+  return result;
+};
+
+const updateUserRole = async (userId: string, newRole: Role) => {
+  return await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({
+      where: { id: userId },
+      include: {
+        admin: true,
+        member: true,
+        superAdmin: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppError(status.NOT_FOUND, "User not found");
+    }
+
+    const oldRole = user.role;
+    if (oldRole === newRole) {
+      return user;
+    }
+
+    // Prepare data for the new profile
+    const baseData = {
+      userId: user.id,
+      name: user.name,
+      profilePhoto: user.image,
+      gender: (user.admin?.gender || user.member?.gender || user.superAdmin?.gender) ?? null,
+    };
+
+    // Create new profile
+    if (newRole === Role.ADMIN) {
+      await tx.admin.create({
+        data: {
+          ...baseData,
+          email: user.email,
+          phone: user.member?.contactNumber || user.superAdmin?.phone || null,
+        },
+      });
+    } else if (newRole === Role.MEMBER) {
+      await tx.member.create({
+        data: {
+          ...baseData,
+          contactNumber: user.admin?.phone || user.superAdmin?.phone || null,
+        },
+      });
+    } else if (newRole === Role.SUPER_ADMIN) {
+      await tx.superAdmin.create({
+        data: {
+          ...baseData,
+          email: user.email,
+          phone: user.admin?.phone || user.member?.contactNumber || null,
+        },
+      });
+    }
+
+    // Delete old profile
+    if (oldRole === Role.ADMIN) {
+      await tx.admin.delete({ where: { userId } });
+    } else if (oldRole === Role.MEMBER) {
+      await tx.member.delete({ where: { userId } });
+    } else if (oldRole === Role.SUPER_ADMIN) {
+      await tx.superAdmin.delete({ where: { userId } });
+    }
+
+    // Update user role
+    return await tx.user.update({
+      where: { id: userId },
+      data: { role: newRole },
+    });
+  });
+};
+
+
+// --- Challenge Management ---
+
+const getAllChallenges = async (queryParams: IQueryParams) => {
+  const challengeQueryBuilder = new QueryBuilder(prisma.challenge, queryParams, {
+    searchableFields: ["title", "description"],
+    filterableFields: ["status", "isPaid", "categoryId"],
+  });
+
+  return await challengeQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .include({ category: true })
+    .execute();
+};
+
+const createChallengeIntoDB = async (payload: any) => {
+  return await prisma.challenge.create({
+    data: payload,
+  });
+};
+
+const getChallengeById = async (id: string) => {
+  const challenge = await prisma.challenge.findUnique({
+    where: { id },
+    include: { category: true },
+  });
+  if (!challenge) throw new AppError(status.NOT_FOUND, "Challenge not found");
+  return challenge;
+};
+
+const updateChallenge = async (id: string, payload: any) => {
+  const challenge = await prisma.challenge.findUnique({ where: { id } });
+  if (!challenge) throw new AppError(status.NOT_FOUND, "Challenge not found");
+
+  return await prisma.challenge.update({
+    where: { id },
+    data: payload,
+  });
+};
+
+const deleteChallenge = async (id: string) => {
+  const challenge = await prisma.challenge.findUnique({ where: { id } });
+  if (!challenge) throw new AppError(status.NOT_FOUND, "Challenge not found");
+
+  return await prisma.challenge.delete({
+    where: { id },
+  });
+};
+
+// --- Category Management ---
+
+const getAllCategories = async (queryParams: IQueryParams) => {
+  const categoryQueryBuilder = new QueryBuilder(prisma.category, queryParams, {
+    searchableFields: ["name", "description"],
+    filterableFields: ["isActive"],
+  });
+
+  return await categoryQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .execute();
+};
+
+const createCategoryIntoDB = async (payload: any) => {
+  return await prisma.category.create({
+    data: payload,
+  });
+};
+
+const updateCategory = async (id: string, payload: any) => {
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (!category) throw new AppError(status.NOT_FOUND, "Category not found");
+
+  return await prisma.category.update({
+    where: { id },
+    data: payload,
+  });
+};
+
+const deleteCategory = async (id: string) => {
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (!category) throw new AppError(status.NOT_FOUND, "Category not found");
+
+  return await prisma.category.delete({
+    where: { id },
+  });
+};
+
+// --- Payment Management ---
+
+const getAllPayments = async (queryParams: IQueryParams) => {
+  const paymentQueryBuilder = new QueryBuilder(prisma.payment, queryParams, {
+    searchableFields: ["transactionId"],
+    filterableFields: ["status"],
+  });
+
+  return await paymentQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .include({ memberChallenge: { include: { member: true, challenge: true } } })
+    .execute();
+};
+
+const getPaymentById = async (id: string) => {
+  const payment = await prisma.payment.findUnique({
+    where: { id },
+    include: { memberChallenge: { include: { member: true, challenge: true } } },
+  });
+  if (!payment) throw new AppError(status.NOT_FOUND, "Payment not found");
+  return payment;
+};
+
+// --- Submission Management ---
+
+const getAllSubmissions = async (queryParams: IQueryParams) => {
+  const submissionQueryBuilder = new QueryBuilder(prisma.submission, queryParams, {
+    searchableFields: ["feedBack"],
+    filterableFields: ["status", "memberId", "challengeId"],
+  });
+
+  return await submissionQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .include({ member: true, challenge: true, memberChallenge: true })
+    .execute();
+};
+
+const getSubmissionById = async (id: string) => {
+  const submission = await prisma.submission.findUnique({
+    where: { id },
+    include: { member: true, challenge: true, memberChallenge: true },
+  });
+  if (!submission) throw new AppError(status.NOT_FOUND, "Submission not found");
+  return submission;
+};
+
+const updateSubmissionStatus = async (id: string, submissionStatus: SubmissionStatus) => {
+  const submission = await prisma.submission.findUnique({ where: { id } });
+  if (!submission) throw new AppError(status.NOT_FOUND, "Submission not found");
+
+  return await prisma.submission.update({
+    where: { id },
+    data: { status: submissionStatus },
+  });
+};
+
+// --- Analytics & Leaderboard ---
+
+const getAnalytics = async () => {
+  const totalUsers = await prisma.user.count();
+  const totalEarnings = await prisma.payment.aggregate({
+    where: { status: "PAID" },
+    _sum: { amount: true },
+  });
+  const totalChallenges = await prisma.challenge.count();
+  const totalSubmissions = await prisma.submission.count();
+
+  return {
+    totalUsers,
+    totalEarnings: totalEarnings._sum.amount || 0,
+    totalChallenges,
+    totalSubmissions,
+  };
+};
+
+const getLeaderboard = async () => {
+  return await prisma.member.findMany({
+    orderBy: { totalPoints: "desc" },
+    take: 10,
+    include: { user: { select: { email: true, name: true, image: true } } },
+  });
+};
+
+// --- Dashboard ---
+
+const getDashboardSummary = async () => {
+  const [
+    totalUsers,
+    totalMembers,
+    totalChallenges,
+    totalPayments,
+    totalEarnings,
+    pendingSubmissions,
+    activeChallenges,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.member.count(),
+    prisma.challenge.count(),
+    prisma.payment.count(),
+    prisma.payment.aggregate({ where: { status: "PAID" }, _sum: { amount: true } }),
+    prisma.submission.count({ where: { status: "PENDING" } }),
+    prisma.challenge.count({ where: { status: "ACTIVE" } }),
+  ]);
+
+  return {
+    totalUsers,
+    totalMembers,
+    totalChallenges,
+    totalPayments,
+    totalEarnings: totalEarnings._sum.amount || 0,
+    pendingSubmissions,
+    activeChallenges,
+  };
+};
+
+export const SuperAdminService = {
+  getAllAdmins,
+  getAdminById,
+  updateAdmin,
+  deleteAdmin,
+  getAllMembers,
+  getMemberById,
+  updateMember,
+  deleteMember,
+  updateUserStatus,
+  updateUserRole,
+  getAllChallenges,
+  createChallengeIntoDB,
+  getChallengeById,
+  updateChallenge,
+  deleteChallenge,
+  getAllCategories,
+  createCategoryIntoDB,
+  updateCategory,
+  deleteCategory,
+  getAllPayments,
+  getPaymentById,
+  getAllSubmissions,
+  getSubmissionById,
+  updateSubmissionStatus,
+  getAnalytics,
+  getLeaderboard,
+  getDashboardSummary,
+};
