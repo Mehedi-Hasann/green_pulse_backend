@@ -10,7 +10,7 @@ const CreateMemberChallenge = catchAsync(async (req: Request, res: Response) => 
   console.log("req.user is => ",req.user)
   const {userId} = req.user;
   const {challengeId} = req.body;
-  // console.log(challengeId)
+  console.log(challengeId)
   const result = await MemberChallengeService.CreateMemberChallenge(userId, challengeId);
 
   sendResponse(res, {

@@ -1,5 +1,4 @@
 import status from "http-status";
-import { ChallengeStatus } from "../../../generated/prisma";
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateChallengePayload, IUpdateChallengePayload } from "./challenge.interface";

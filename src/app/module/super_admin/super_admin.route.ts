@@ -71,23 +71,23 @@ router.patch(
 router.delete("/categories/:id", SuperAdminController.deleteCategory);
 
 // --- Payment Management ---
-router.get("/payments", SuperAdminController.getAllPayments);
-router.get("/payments/:id", SuperAdminController.getPaymentById);
+router.get("/payments", SuperAdminController.getAllPayments);  //ok
+router.get("/payments/:id", SuperAdminController.getPaymentById); //ok
 
 // --- Submission Management ---
-router.get("/submissions", SuperAdminController.getAllSubmissions);
-router.get("/submissions/:id", SuperAdminController.getSubmissionById);
+router.get("/submissions", SuperAdminController.getAllSubmissions); //ok
+router.get("/submissions/:id", SuperAdminController.getSubmissionById); //ok
 router.patch(
   "/submissions/:id/status",
   validateRequest(SuperAdminValidations.updateSubmissionStatusSchema),
   SuperAdminController.updateSubmissionStatus
-);
+); //ok
 
 // --- Analytics & Leaderboard ---
-router.get("/analytics", SuperAdminController.getAnalytics);
-router.get("/leaderboard", SuperAdminController.getLeaderboard);
+router.get("/analytics", SuperAdminController.getAnalytics); //ok
+router.get("/leaderboard", SuperAdminController.getLeaderboard); //ok
 
 // --- Dashboard ---
-router.get("/dashboard", SuperAdminController.getDashboardSummary);
+router.get("/dashboard", SuperAdminController.getDashboardSummary); //ok
 
 export const SuperAdminRoutes = router;

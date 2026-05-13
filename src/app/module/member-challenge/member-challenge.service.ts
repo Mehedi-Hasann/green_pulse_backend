@@ -17,6 +17,7 @@ const CreateMemberChallenge = async (userId: string, challengeId: string) => {
         member : true
       }
   });
+  console.log("HI")
   if(!user?.member){
     throw new AppError(status.NOT_FOUND, "User is not Exits")
   }
@@ -46,6 +47,7 @@ const CreateMemberChallenge = async (userId: string, challengeId: string) => {
     throw new AppError(status.CONFLICT, "Member has already joined this challenge");
   }
 
+  console.log("HIII")
   const result = await prisma.memberChallenge.create({
     data: { memberId, challengeId },
     include: {
@@ -53,6 +55,7 @@ const CreateMemberChallenge = async (userId: string, challengeId: string) => {
       challenge: { include: { category: true } },
     },
   });
+  console.log("HIII 2")
 
   return result;
 };
