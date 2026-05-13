@@ -9,9 +9,6 @@ import AppError from "../../errorHelpers/AppError";
 import { CookieUtils } from "../../utils/cookie";
 import { envVars } from "../../../config/env";
 import { auth } from "../../lib/auth";
-import { Role } from "../../../generated/prisma";
-
-
 
 
 const registerMember = catchAsync(
