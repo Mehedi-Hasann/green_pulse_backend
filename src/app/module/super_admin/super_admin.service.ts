@@ -415,25 +415,30 @@ const getSubmissionById = async (id: string) => {
 };
 
 const updateSubmissionStatus = async (id: string, submissionStatus: SubmissionStatus) => {
+  
   const submission = await prisma.submission.findUnique({
     where: { id },
     include: { member: true, challenge: true },
   });
   if (!submission) throw new AppError(status.NOT_FOUND, "Submission not found");
+  
 
   const shouldAddPoints =
     submission.status !== SubmissionStatus.APPROVED &&
     submissionStatus === SubmissionStatus.APPROVED;
 
   const result = await prisma.$transaction(async (tx) => {
+    
     const updatedSubmission = await tx.submission.update({
       where: { id },
       data: { status: submissionStatus },
     });
 
     if (shouldAddPoints) {
+      
       const pointsToAdd = submission.challenge?.pointsPerDay ?? 0;
       if (submission.member) {
+        
         await tx.member.update({
           where: { id: submission.member.id },
           data: {
@@ -442,17 +447,19 @@ const updateSubmissionStatus = async (id: string, submissionStatus: SubmissionSt
             },
           },
         });
+        
         await tx.memberChallenge.update({
-          where: { id: submission.member.id },
+          where: { id: submission.memberChallengeId },
           data: {
             pointsAchieved: {
               increment: pointsToAdd,
             },
           },
         });
+        console.log("Hi")
       }
     }
-
+console.log("Updated Submission => ", updatedSubmission)
     return updatedSubmission;
   });
 
