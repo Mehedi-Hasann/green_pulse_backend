@@ -17,7 +17,7 @@ app.set("views", path.resolve(process.cwd(), `src/app/templates`));
 
 // Standard Middlewares
 app.use(cors({
-  origin: [envVars.FRONTEND_URL, envVars.BETTER_AUTH_URL],
+  origin: envVars.FRONTEND_URL,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
@@ -48,4 +48,4 @@ app.get('/', (req: Request, res: Response) => {
 app.use(globalErrorHandler);
 app.use(notFound);
 
-export default app;
+export default app;
