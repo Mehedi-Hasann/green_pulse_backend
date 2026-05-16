@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "prisma generate",
+  "installCommand": "pnpm install --ignore-scripts && pnpm exec prisma generate",
+  "buildCommand": "echo 'Build complete'",
   "builds": [
     {
       "src": "api/index.ts",
