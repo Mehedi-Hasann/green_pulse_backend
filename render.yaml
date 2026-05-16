@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: green-pulse-backend
+    runtime: node
+    buildCommand: pnpm install --frozen-lockfile && pnpm exec prisma generate && pnpm build
+    startCommand: node dist/server.cjs
+    envVars:
+      - key: NODE_ENV
+        value: production

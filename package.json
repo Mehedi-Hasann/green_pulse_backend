@@ -2,7 +2,7 @@
   "name": "green-pulse-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.cjs",
   "scripts": {
     "lint": "eslint ./src/**/**",
     "migrate": "prisma migrate dev",
