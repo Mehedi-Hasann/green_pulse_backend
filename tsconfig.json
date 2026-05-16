@@ -10,7 +10,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "target": "ES2023",
-    // "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "6.0",
     "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
