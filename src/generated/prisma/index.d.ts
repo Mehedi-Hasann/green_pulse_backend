@@ -8908,6 +8908,7 @@ export namespace Prisma {
   export type ChallengeMinAggregateOutputType = {
     id: string | null
     categoryId: string | null
+    image: string | null
     title: string | null
     description: string | null
     duration: number | null
@@ -8922,6 +8923,7 @@ export namespace Prisma {
   export type ChallengeMaxAggregateOutputType = {
     id: string | null
     categoryId: string | null
+    image: string | null
     title: string | null
     description: string | null
     duration: number | null
@@ -8936,6 +8938,7 @@ export namespace Prisma {
   export type ChallengeCountAggregateOutputType = {
     id: number
     categoryId: number
+    image: number
     title: number
     description: number
     duration: number
@@ -8964,6 +8967,7 @@ export namespace Prisma {
   export type ChallengeMinAggregateInputType = {
     id?: true
     categoryId?: true
+    image?: true
     title?: true
     description?: true
     duration?: true
@@ -8978,6 +8982,7 @@ export namespace Prisma {
   export type ChallengeMaxAggregateInputType = {
     id?: true
     categoryId?: true
+    image?: true
     title?: true
     description?: true
     duration?: true
@@ -8992,6 +8997,7 @@ export namespace Prisma {
   export type ChallengeCountAggregateInputType = {
     id?: true
     categoryId?: true
+    image?: true
     title?: true
     description?: true
     duration?: true
@@ -9093,6 +9099,7 @@ export namespace Prisma {
   export type ChallengeGroupByOutputType = {
     id: string
     categoryId: string
+    image: string | null
     title: string
     description: string
     duration: number
@@ -9126,6 +9133,7 @@ export namespace Prisma {
   export type ChallengeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     categoryId?: boolean
+    image?: boolean
     title?: boolean
     description?: boolean
     duration?: boolean
@@ -9144,6 +9152,7 @@ export namespace Prisma {
   export type ChallengeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     categoryId?: boolean
+    image?: boolean
     title?: boolean
     description?: boolean
     duration?: boolean
@@ -9159,6 +9168,7 @@ export namespace Prisma {
   export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     categoryId?: boolean
+    image?: boolean
     title?: boolean
     description?: boolean
     duration?: boolean
@@ -9174,6 +9184,7 @@ export namespace Prisma {
   export type ChallengeSelectScalar = {
     id?: boolean
     categoryId?: boolean
+    image?: boolean
     title?: boolean
     description?: boolean
     duration?: boolean
@@ -9185,7 +9196,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ChallengeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "categoryId" | "title" | "description" | "duration" | "status" | "pointsPerDay" | "isPaid" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
+  export type ChallengeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "categoryId" | "image" | "title" | "description" | "duration" | "status" | "pointsPerDay" | "isPaid" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["challenge"]>
   export type ChallengeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     memberChallenges?: boolean | Challenge$memberChallengesArgs<ExtArgs>
@@ -9209,6 +9220,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       categoryId: string
+      image: string | null
       title: string
       description: string
       duration: number
@@ -9646,6 +9658,7 @@ export namespace Prisma {
   interface ChallengeFieldRefs {
     readonly id: FieldRef<"Challenge", 'String'>
     readonly categoryId: FieldRef<"Challenge", 'String'>
+    readonly image: FieldRef<"Challenge", 'String'>
     readonly title: FieldRef<"Challenge", 'String'>
     readonly description: FieldRef<"Challenge", 'String'>
     readonly duration: FieldRef<"Challenge", 'Int'>
@@ -10144,6 +10157,7 @@ export namespace Prisma {
 
   export type MemberMinAggregateOutputType = {
     id: string | null
+    userId: string | null
     name: string | null
     totalPoints: number | null
     profilePhoto: string | null
@@ -10153,11 +10167,11 @@ export namespace Prisma {
     deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type MemberMaxAggregateOutputType = {
     id: string | null
+    userId: string | null
     name: string | null
     totalPoints: number | null
     profilePhoto: string | null
@@ -10167,11 +10181,11 @@ export namespace Prisma {
     deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type MemberCountAggregateOutputType = {
     id: number
+    userId: number
     name: number
     totalPoints: number
     profilePhoto: number
@@ -10181,7 +10195,6 @@ export namespace Prisma {
     deletedAt: number
     createdAt: number
     updatedAt: number
-    userId: number
     _all: number
   }
 
@@ -10196,6 +10209,7 @@ export namespace Prisma {
 
   export type MemberMinAggregateInputType = {
     id?: true
+    userId?: true
     name?: true
     totalPoints?: true
     profilePhoto?: true
@@ -10205,11 +10219,11 @@ export namespace Prisma {
     deletedAt?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type MemberMaxAggregateInputType = {
     id?: true
+    userId?: true
     name?: true
     totalPoints?: true
     profilePhoto?: true
@@ -10219,11 +10233,11 @@ export namespace Prisma {
     deletedAt?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type MemberCountAggregateInputType = {
     id?: true
+    userId?: true
     name?: true
     totalPoints?: true
     profilePhoto?: true
@@ -10233,7 +10247,6 @@ export namespace Prisma {
     deletedAt?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
     _all?: true
   }
 
@@ -10325,6 +10338,7 @@ export namespace Prisma {
 
   export type MemberGroupByOutputType = {
     id: string
+    userId: string
     name: string
     totalPoints: number
     profilePhoto: string | null
@@ -10334,7 +10348,6 @@ export namespace Prisma {
     deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
-    userId: string
     _count: MemberCountAggregateOutputType | null
     _avg: MemberAvgAggregateOutputType | null
     _sum: MemberSumAggregateOutputType | null
@@ -10358,6 +10371,7 @@ export namespace Prisma {
 
   export type MemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
     name?: boolean
     totalPoints?: boolean
     profilePhoto?: boolean
@@ -10367,7 +10381,6 @@ export namespace Prisma {
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     memberChallenge?: boolean | Member$memberChallengeArgs<ExtArgs>
     submission?: boolean | Member$submissionArgs<ExtArgs>
@@ -10376,6 +10389,7 @@ export namespace Prisma {
 
   export type MemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
     name?: boolean
     totalPoints?: boolean
     profilePhoto?: boolean
@@ -10385,12 +10399,12 @@ export namespace Prisma {
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
     name?: boolean
     totalPoints?: boolean
     profilePhoto?: boolean
@@ -10400,12 +10414,12 @@ export namespace Prisma {
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectScalar = {
     id?: boolean
+    userId?: boolean
     name?: boolean
     totalPoints?: boolean
     profilePhoto?: boolean
@@ -10415,10 +10429,9 @@ export namespace Prisma {
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "totalPoints" | "profilePhoto" | "contactNumber" | "gender" | "isDeleted" | "deletedAt" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "totalPoints" | "profilePhoto" | "contactNumber" | "gender" | "isDeleted" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     memberChallenge?: boolean | Member$memberChallengeArgs<ExtArgs>
@@ -10441,6 +10454,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      userId: string
       name: string
       totalPoints: number
       profilePhoto: string | null
@@ -10450,7 +10464,6 @@ export namespace Prisma {
       deletedAt: Date | null
       createdAt: Date
       updatedAt: Date
-      userId: string
     }, ExtArgs["result"]["member"]>
     composites: {}
   }
@@ -10878,6 +10891,7 @@ export namespace Prisma {
    */
   interface MemberFieldRefs {
     readonly id: FieldRef<"Member", 'String'>
+    readonly userId: FieldRef<"Member", 'String'>
     readonly name: FieldRef<"Member", 'String'>
     readonly totalPoints: FieldRef<"Member", 'Float'>
     readonly profilePhoto: FieldRef<"Member", 'String'>
@@ -10887,7 +10901,6 @@ export namespace Prisma {
     readonly deletedAt: FieldRef<"Member", 'DateTime'>
     readonly createdAt: FieldRef<"Member", 'DateTime'>
     readonly updatedAt: FieldRef<"Member", 'DateTime'>
-    readonly userId: FieldRef<"Member", 'String'>
   }
     
 
@@ -16050,6 +16063,7 @@ export namespace Prisma {
   export const ChallengeScalarFieldEnum: {
     id: 'id',
     categoryId: 'categoryId',
+    image: 'image',
     title: 'title',
     description: 'description',
     duration: 'duration',
@@ -16066,6 +16080,7 @@ export namespace Prisma {
 
   export const MemberScalarFieldEnum: {
     id: 'id',
+    userId: 'userId',
     name: 'name',
     totalPoints: 'totalPoints',
     profilePhoto: 'profilePhoto',
@@ -16074,8 +16089,7 @@ export namespace Prisma {
     isDeleted: 'isDeleted',
     deletedAt: 'deletedAt',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    userId: 'userId'
+    updatedAt: 'updatedAt'
   };
 
   export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
@@ -16784,6 +16798,7 @@ export namespace Prisma {
     NOT?: ChallengeWhereInput | ChallengeWhereInput[]
     id?: StringFilter<"Challenge"> | string
     categoryId?: StringFilter<"Challenge"> | string
+    image?: StringNullableFilter<"Challenge"> | string | null
     title?: StringFilter<"Challenge"> | string
     description?: StringFilter<"Challenge"> | string
     duration?: IntFilter<"Challenge"> | number
@@ -16801,6 +16816,7 @@ export namespace Prisma {
   export type ChallengeOrderByWithRelationInput = {
     id?: SortOrder
     categoryId?: SortOrder
+    image?: SortOrderInput | SortOrder
     title?: SortOrder
     description?: SortOrder
     duration?: SortOrder
@@ -16822,6 +16838,7 @@ export namespace Prisma {
     OR?: ChallengeWhereInput[]
     NOT?: ChallengeWhereInput | ChallengeWhereInput[]
     categoryId?: StringFilter<"Challenge"> | string
+    image?: StringNullableFilter<"Challenge"> | string | null
     description?: StringFilter<"Challenge"> | string
     duration?: IntFilter<"Challenge"> | number
     status?: EnumChallengeStatusFilter<"Challenge"> | $Enums.ChallengeStatus
@@ -16838,6 +16855,7 @@ export namespace Prisma {
   export type ChallengeOrderByWithAggregationInput = {
     id?: SortOrder
     categoryId?: SortOrder
+    image?: SortOrderInput | SortOrder
     title?: SortOrder
     description?: SortOrder
     duration?: SortOrder
@@ -16860,6 +16878,7 @@ export namespace Prisma {
     NOT?: ChallengeScalarWhereWithAggregatesInput | ChallengeScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Challenge"> | string
     categoryId?: StringWithAggregatesFilter<"Challenge"> | string
+    image?: StringNullableWithAggregatesFilter<"Challenge"> | string | null
     title?: StringWithAggregatesFilter<"Challenge"> | string
     description?: StringWithAggregatesFilter<"Challenge"> | string
     duration?: IntWithAggregatesFilter<"Challenge"> | number
@@ -16876,6 +16895,7 @@ export namespace Prisma {
     OR?: MemberWhereInput[]
     NOT?: MemberWhereInput | MemberWhereInput[]
     id?: StringFilter<"Member"> | string
+    userId?: StringFilter<"Member"> | string
     name?: StringFilter<"Member"> | string
     totalPoints?: FloatFilter<"Member"> | number
     profilePhoto?: StringNullableFilter<"Member"> | string | null
@@ -16885,7 +16905,6 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"Member"> | Date | string | null
     createdAt?: DateTimeFilter<"Member"> | Date | string
     updatedAt?: DateTimeFilter<"Member"> | Date | string
-    userId?: StringFilter<"Member"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     memberChallenge?: MemberChallengeListRelationFilter
     submission?: SubmissionListRelationFilter
@@ -16893,6 +16912,7 @@ export namespace Prisma {
 
   export type MemberOrderByWithRelationInput = {
     id?: SortOrder
+    userId?: SortOrder
     name?: SortOrder
     totalPoints?: SortOrder
     profilePhoto?: SortOrderInput | SortOrder
@@ -16902,7 +16922,6 @@ export namespace Prisma {
     deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     user?: UserOrderByWithRelationInput
     memberChallenge?: MemberChallengeOrderByRelationAggregateInput
     submission?: SubmissionOrderByRelationAggregateInput
@@ -16930,6 +16949,7 @@ export namespace Prisma {
 
   export type MemberOrderByWithAggregationInput = {
     id?: SortOrder
+    userId?: SortOrder
     name?: SortOrder
     totalPoints?: SortOrder
     profilePhoto?: SortOrderInput | SortOrder
@@ -16939,7 +16959,6 @@ export namespace Prisma {
     deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     _count?: MemberCountOrderByAggregateInput
     _avg?: MemberAvgOrderByAggregateInput
     _max?: MemberMaxOrderByAggregateInput
@@ -16952,6 +16971,7 @@ export namespace Prisma {
     OR?: MemberScalarWhereWithAggregatesInput[]
     NOT?: MemberScalarWhereWithAggregatesInput | MemberScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Member"> | string
+    userId?: StringWithAggregatesFilter<"Member"> | string
     name?: StringWithAggregatesFilter<"Member"> | string
     totalPoints?: FloatWithAggregatesFilter<"Member"> | number
     profilePhoto?: StringNullableWithAggregatesFilter<"Member"> | string | null
@@ -16961,7 +16981,6 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Member"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Member"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Member"> | Date | string
-    userId?: StringWithAggregatesFilter<"Member"> | string
   }
 
   export type MemberChallengeWhereInput = {
@@ -17807,6 +17826,7 @@ export namespace Prisma {
 
   export type ChallengeCreateInput = {
     id?: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -17824,6 +17844,7 @@ export namespace Prisma {
   export type ChallengeUncheckedCreateInput = {
     id?: string
     categoryId: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -17839,6 +17860,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -17856,6 +17878,7 @@ export namespace Prisma {
   export type ChallengeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     categoryId?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -17872,6 +17895,7 @@ export namespace Prisma {
   export type ChallengeCreateManyInput = {
     id?: string
     categoryId: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -17885,6 +17909,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -17899,6 +17924,7 @@ export namespace Prisma {
   export type ChallengeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     categoryId?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -17928,6 +17954,7 @@ export namespace Prisma {
 
   export type MemberUncheckedCreateInput = {
     id?: string
+    userId: string
     name: string
     totalPoints?: number
     profilePhoto?: string | null
@@ -17937,7 +17964,6 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
     memberChallenge?: MemberChallengeUncheckedCreateNestedManyWithoutMemberInput
     submission?: SubmissionUncheckedCreateNestedManyWithoutMemberInput
   }
@@ -17960,6 +17986,7 @@ export namespace Prisma {
 
   export type MemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     totalPoints?: FloatFieldUpdateOperationsInput | number
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17969,13 +17996,13 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
     memberChallenge?: MemberChallengeUncheckedUpdateManyWithoutMemberNestedInput
     submission?: SubmissionUncheckedUpdateManyWithoutMemberNestedInput
   }
 
   export type MemberCreateManyInput = {
     id?: string
+    userId: string
     name: string
     totalPoints?: number
     profilePhoto?: string | null
@@ -17985,7 +18012,6 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type MemberUpdateManyMutationInput = {
@@ -18003,6 +18029,7 @@ export namespace Prisma {
 
   export type MemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     totalPoints?: FloatFieldUpdateOperationsInput | number
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18012,7 +18039,6 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type MemberChallengeCreateInput = {
@@ -18853,6 +18879,7 @@ export namespace Prisma {
   export type ChallengeCountOrderByAggregateInput = {
     id?: SortOrder
     categoryId?: SortOrder
+    image?: SortOrder
     title?: SortOrder
     description?: SortOrder
     duration?: SortOrder
@@ -18873,6 +18900,7 @@ export namespace Prisma {
   export type ChallengeMaxOrderByAggregateInput = {
     id?: SortOrder
     categoryId?: SortOrder
+    image?: SortOrder
     title?: SortOrder
     description?: SortOrder
     duration?: SortOrder
@@ -18887,6 +18915,7 @@ export namespace Prisma {
   export type ChallengeMinOrderByAggregateInput = {
     id?: SortOrder
     categoryId?: SortOrder
+    image?: SortOrder
     title?: SortOrder
     description?: SortOrder
     duration?: SortOrder
@@ -18959,6 +18988,7 @@ export namespace Prisma {
 
   export type MemberCountOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
     name?: SortOrder
     totalPoints?: SortOrder
     profilePhoto?: SortOrder
@@ -18968,7 +18998,6 @@ export namespace Prisma {
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type MemberAvgOrderByAggregateInput = {
@@ -18977,6 +19006,7 @@ export namespace Prisma {
 
   export type MemberMaxOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
     name?: SortOrder
     totalPoints?: SortOrder
     profilePhoto?: SortOrder
@@ -18986,11 +19016,11 @@ export namespace Prisma {
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type MemberMinOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
     name?: SortOrder
     totalPoints?: SortOrder
     profilePhoto?: SortOrder
@@ -19000,7 +19030,6 @@ export namespace Prisma {
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type MemberSumOrderByAggregateInput = {
@@ -20888,6 +20917,7 @@ export namespace Prisma {
 
   export type ChallengeCreateWithoutCategoryInput = {
     id?: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -20903,6 +20933,7 @@ export namespace Prisma {
 
   export type ChallengeUncheckedCreateWithoutCategoryInput = {
     id?: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -20948,6 +20979,7 @@ export namespace Prisma {
     NOT?: ChallengeScalarWhereInput | ChallengeScalarWhereInput[]
     id?: StringFilter<"Challenge"> | string
     categoryId?: StringFilter<"Challenge"> | string
+    image?: StringNullableFilter<"Challenge"> | string | null
     title?: StringFilter<"Challenge"> | string
     description?: StringFilter<"Challenge"> | string
     duration?: IntFilter<"Challenge"> | number
@@ -21350,6 +21382,7 @@ export namespace Prisma {
 
   export type MemberUncheckedCreateWithoutMemberChallengeInput = {
     id?: string
+    userId: string
     name: string
     totalPoints?: number
     profilePhoto?: string | null
@@ -21359,7 +21392,6 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
     submission?: SubmissionUncheckedCreateNestedManyWithoutMemberInput
   }
 
@@ -21370,6 +21402,7 @@ export namespace Prisma {
 
   export type ChallengeCreateWithoutMemberChallengesInput = {
     id?: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -21386,6 +21419,7 @@ export namespace Prisma {
   export type ChallengeUncheckedCreateWithoutMemberChallengesInput = {
     id?: string
     categoryId: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -21490,6 +21524,7 @@ export namespace Prisma {
 
   export type MemberUncheckedUpdateWithoutMemberChallengeInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     totalPoints?: FloatFieldUpdateOperationsInput | number
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21499,7 +21534,6 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
     submission?: SubmissionUncheckedUpdateManyWithoutMemberNestedInput
   }
 
@@ -21516,6 +21550,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateWithoutMemberChallengesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -21532,6 +21567,7 @@ export namespace Prisma {
   export type ChallengeUncheckedUpdateWithoutMemberChallengesInput = {
     id?: StringFieldUpdateOperationsInput | string
     categoryId?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -21701,6 +21737,7 @@ export namespace Prisma {
 
   export type MemberUncheckedCreateWithoutSubmissionInput = {
     id?: string
+    userId: string
     name: string
     totalPoints?: number
     profilePhoto?: string | null
@@ -21710,7 +21747,6 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
     memberChallenge?: MemberChallengeUncheckedCreateNestedManyWithoutMemberInput
   }
 
@@ -21721,6 +21757,7 @@ export namespace Prisma {
 
   export type ChallengeCreateWithoutSubmissionInput = {
     id?: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -21737,6 +21774,7 @@ export namespace Prisma {
   export type ChallengeUncheckedCreateWithoutSubmissionInput = {
     id?: string
     categoryId: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -21817,6 +21855,7 @@ export namespace Prisma {
 
   export type MemberUncheckedUpdateWithoutSubmissionInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     totalPoints?: FloatFieldUpdateOperationsInput | number
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21826,7 +21865,6 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
     memberChallenge?: MemberChallengeUncheckedUpdateManyWithoutMemberNestedInput
   }
 
@@ -21843,6 +21881,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateWithoutSubmissionInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -21859,6 +21898,7 @@ export namespace Prisma {
   export type ChallengeUncheckedUpdateWithoutSubmissionInput = {
     id?: StringFieldUpdateOperationsInput | string
     categoryId?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -22065,6 +22105,7 @@ export namespace Prisma {
 
   export type ChallengeCreateManyCategoryInput = {
     id?: string
+    image?: string | null
     title: string
     description: string
     duration: number
@@ -22078,6 +22119,7 @@ export namespace Prisma {
 
   export type ChallengeUpdateWithoutCategoryInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -22093,6 +22135,7 @@ export namespace Prisma {
 
   export type ChallengeUncheckedUpdateWithoutCategoryInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -22108,6 +22151,7 @@ export namespace Prisma {
 
   export type ChallengeUncheckedUpdateManyWithoutCategoryInput = {
     id?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number

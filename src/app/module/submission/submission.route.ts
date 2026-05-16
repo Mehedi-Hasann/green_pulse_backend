@@ -53,7 +53,7 @@ router.get(
   "/challenge/:challengeId",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   SubmissionController.getSubmissionsByChallengeId
-);
+); //ok
 
 router.patch(
   "/:id",
@@ -61,12 +61,12 @@ router.patch(
   multerUpload.array("files"),
   validateRequest(SubmissionValidations.updateSubmissionSchema),
   SubmissionController.updateSubmission
-);
+); //ok
 
 router.delete(
   "/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   SubmissionController.deleteSubmission
-);
+); //ok
 
 export const SubmissionRoutes = router;

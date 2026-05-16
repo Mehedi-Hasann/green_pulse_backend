@@ -86,6 +86,18 @@ const getMemberPayments = catchAsync(async (req, res) => {
   });
 });
 
+const GetMemberStats = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await MemberServices.getMemberStatsFromDB(userId);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Member stats fetched successfully",
+    data: result,
+  });
+});
+
 export const MemberControllers = {
   getAllMembers,
   getMemberById,
@@ -94,4 +106,5 @@ export const MemberControllers = {
   getMemberChallenges,
   getMemberSubmissions,
   getMemberPayments,
+  GetMemberStats,
 };

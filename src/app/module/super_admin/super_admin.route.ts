@@ -4,90 +4,100 @@ import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma";
 import { validateRequest } from "../../middleware/validateRequest";
 import { SuperAdminValidations } from "./super_admin.validate";
+import { multerUpload } from "../../../config/multer.config";
 
 const router: Router = Router();
 
 // Middleware to ensure all routes in this router are restricted to SUPER_ADMIN
-router.use(checkAuth(Role.SUPER_ADMIN));
 
-router.get("/admins", SuperAdminController.getAllAdmins); //ok
-router.get("/admins/:id", SuperAdminController.getAdminById); //ok
+
+router.get("/admins", checkAuth(Role.SUPER_ADMIN),SuperAdminController.getAllAdmins);
+router.get("/admins/:id",checkAuth(Role.SUPER_ADMIN), SuperAdminController.getAdminById);
 router.patch(
   "/admins/:id",
-  validateRequest(SuperAdminValidations.updateAdminSchema),
+  validateRequest(SuperAdminValidations.updateAdminSchema),checkAuth(Role.SUPER_ADMIN),
   SuperAdminController.updateAdmin
-); //ok
-router.delete("/admins/:id", SuperAdminController.deleteAdmin); //ok
+);
+router.delete("/admins/:id", checkAuth(Role.SUPER_ADMIN),SuperAdminController.deleteAdmin);
 
 // --- Member Management ---
-router.get("/members", SuperAdminController.getAllMembers); //ok
-router.get("/members/:id", SuperAdminController.getMemberById); //ok
+router.get("/members",checkAuth(Role.SUPER_ADMIN), SuperAdminController.getAllMembers); 
+router.get("/members/:id",checkAuth(Role.SUPER_ADMIN), SuperAdminController.getMemberById); 
 router.patch(
   "/members/:id",
-  validateRequest(SuperAdminValidations.updateMemberSchema),
+  validateRequest(SuperAdminValidations.updateMemberSchema),checkAuth(Role.SUPER_ADMIN),
   SuperAdminController.updateMember
-);  //ok
-router.delete("/members/:id", SuperAdminController.deleteMember);  //ok
+);  
+router.delete("/members/:id",checkAuth(Role.SUPER_ADMIN), SuperAdminController.deleteMember); 
 
 // --- User Control ---
 router.patch(
   "/users/:id/status",
-  validateRequest(SuperAdminValidations.updateUserStatusSchema),
+  validateRequest(SuperAdminValidations.updateUserStatusSchema),checkAuth(Role.SUPER_ADMIN),
   SuperAdminController.updateUserStatus
-);  //ok
+);  
 router.patch(
-  "/users/:id/role",
+  "/users/:id/role",checkAuth(Role.SUPER_ADMIN),
   validateRequest(SuperAdminValidations.updateUserRoleSchema),
   SuperAdminController.updateUserRole
-);  //ok
+);  
 
 // --- Challenge Management ---
-router.get("/challenges", SuperAdminController.getAllChallenges); //ok
+router.get("/challenges", checkAuth(Role.SUPER_ADMIN),SuperAdminController.getAllChallenges);
 router.post(
-  "/challenges",
+  "/challenges",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),
   validateRequest(SuperAdminValidations.createChallengeSchema),
   SuperAdminController.createChallenge
-); //ok
-router.get("/challenges/:id", SuperAdminController.getChallengeById); //ok
+);
+router.get("/challenges/:id",checkAuth(Role.ADMIN,Role.SUPER_ADMIN), SuperAdminController.getChallengeById);
 router.patch(
-  "/challenges/:id",
+  "/challenges/:id",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),
   validateRequest(SuperAdminValidations.updateChallengeSchema),
   SuperAdminController.updateChallenge
-); //ok
-router.delete("/challenges/:id", SuperAdminController.deleteChallenge); //ok
+);
+router.delete("/challenges/:id",checkAuth(Role.ADMIN,Role.SUPER_ADMIN), SuperAdminController.deleteChallenge);
 
 // --- Category Management ---
-router.get("/categories", SuperAdminController.getAllCategories); //ok
+router.get("/categories",checkAuth(Role.ADMIN,Role.SUPER_ADMIN), SuperAdminController.getAllCategories); 
 router.post(
-  "/categories",
+  "/categories",checkAuth(Role.SUPER_ADMIN),
   validateRequest(SuperAdminValidations.createCategorySchema),
   SuperAdminController.createCategory
-); //ok
+); 
 router.patch(
-  "/categories/:id",
+  "/categories/:id",checkAuth(Role.SUPER_ADMIN),
   validateRequest(SuperAdminValidations.updateCategorySchema),
   SuperAdminController.updateCategory
-); //ok
-router.delete("/categories/:id", SuperAdminController.deleteCategory);
+); 
+router.delete("/categories/:id",checkAuth(Role.SUPER_ADMIN), SuperAdminController.deleteCategory);
 
 // --- Payment Management ---
-router.get("/payments", SuperAdminController.getAllPayments);  //ok
-router.get("/payments/:id", SuperAdminController.getPaymentById); //ok
+router.get("/payments", checkAuth(Role.SUPER_ADMIN),SuperAdminController.getAllPayments);
+router.get("/payments/:id",checkAuth(Role.SUPER_ADMIN), SuperAdminController.getPaymentById);
 
 // --- Submission Management ---
-router.get("/submissions", SuperAdminController.getAllSubmissions); //ok
-router.get("/submissions/:id", SuperAdminController.getSubmissionById); //ok
+router.get("/submissions",checkAuth(Role.SUPER_ADMIN), SuperAdminController.getAllSubmissions);
+router.get("/submissions/pending",checkAuth(Role.ADMIN,Role.SUPER_ADMIN), SuperAdminController.getPendingSubmissions);
+router.get("/submissions/:id",checkAuth(Role.SUPER_ADMIN), SuperAdminController.getSubmissionById);
 router.patch(
-  "/submissions/:id/status",
+  "/submissions/:id/status",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),
   validateRequest(SuperAdminValidations.updateSubmissionStatusSchema),
   SuperAdminController.updateSubmissionStatus
-); //ok
+);
 
 // --- Analytics & Leaderboard ---
-router.get("/analytics", SuperAdminController.getAnalytics); //ok
-router.get("/leaderboard", SuperAdminController.getLeaderboard); //ok
+router.get("/analytics",checkAuth(Role.ADMIN,Role.SUPER_ADMIN), SuperAdminController.getAnalytics);
+router.get("/leaderboard",SuperAdminController.getLeaderboard);
 
 // --- Dashboard ---
-router.get("/dashboard", SuperAdminController.getDashboardSummary); //ok
+router.get("/dashboard",checkAuth(Role.ADMIN,Role.SUPER_ADMIN), SuperAdminController.getDashboardSummary);
+
+router.patch(
+  "/:id",
+  multerUpload.single("file"),
+  checkAuth(Role.SUPER_ADMIN),
+  validateRequest(SuperAdminValidations.updateUserSchema),
+  SuperAdminController.UpdateSuperAdminBySuperAdmin
+);
 
 export const SuperAdminRoutes = router;

@@ -9,17 +9,17 @@ router.post(
   "/",
   validateRequest(CategoryValidations.createCategorySchema),
   CategoryController.createCategory
-); //ok
+); 
 
-router.get("/", CategoryController.getAllCategories); //ok
-router.get("/:id", CategoryController.getCategoryById); //ok
+router.get("/", CategoryController.getAllCategories); 
+router.get("/:id", CategoryController.getCategoryById); 
 
 router.patch(
   "/:id",
   validateRequest(CategoryValidations.updateCategorySchema),
   CategoryController.updateCategory
-); //ok
+); 
 
-router.delete("/:id", CategoryController.deleteCategory);//ok
+router.delete("/:id", CategoryController.deleteCategory);
 
 export const CategoryRoutes = router;

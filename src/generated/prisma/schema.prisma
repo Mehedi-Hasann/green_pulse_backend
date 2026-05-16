@@ -108,6 +108,7 @@ model Challenge {
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  image      String?
 
   memberChallenges MemberChallenge[]
   submission       Submission[]
@@ -167,6 +168,9 @@ enum PaymentStatus {
 model Member {
   id String @id @default(uuid())
 
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   name          String
   totalPoints   Float     @default(0.0)
   profilePhoto  String?
@@ -176,9 +180,6 @@ model Member {
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   memberChallenge MemberChallenge[]
   submission      Submission[]

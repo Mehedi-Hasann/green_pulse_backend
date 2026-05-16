@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import { Request, Response } from "express";
 import { IQueryParams } from "../../interfaces/query.interface";
@@ -7,10 +8,10 @@ import { MemberChallengeService } from "./member-challenge.service";
 
 
 const CreateMemberChallenge = catchAsync(async (req: Request, res: Response) => {
-  console.log("req.user is => ",req.user)
+  // console.log("req.user is => ",req.user)
   const {userId} = req.user;
   const {challengeId} = req.body;
-  console.log(challengeId)
+  // console.log(challengeId)
   const result = await MemberChallengeService.CreateMemberChallenge(userId, challengeId);
 
   sendResponse(res, {
@@ -35,7 +36,7 @@ const getAllMemberChallenges = catchAsync(async (req: Request<any, any, any, IQu
 });
 
 const getSingleMemberChallenge = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { userId :id } = req.user;
   const result = await MemberChallengeService.getSingleMemberChallenge(id as string);
 
   sendResponse(res, {
@@ -46,10 +47,11 @@ const getSingleMemberChallenge = catchAsync(async (req: Request, res: Response) 
   });
 });
 
-const getMemberChallengesByMemberId = catchAsync(async (req: Request, res: Response) => {
-  const { memberId } = req.params;
-  const result = await MemberChallengeService.getMemberChallengesByMemberId(
-    memberId as string,
+const getMyChallengesByMemberId = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.user;
+  // console.log("Member ID in controller => ", userId);
+  const result = await MemberChallengeService.getMyChallengesByMemberId(
+    userId as string,
     req.query
   );
 
@@ -77,6 +79,7 @@ const updateMemberChallengeByMemberChallengeId = catchAsync(async (req: Request,
 
 const deleteMemberChallenge = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  
   const result = await MemberChallengeService.deleteMemberChallenge(id as string);
 
   sendResponse(res, {
@@ -91,7 +94,7 @@ export const MemberChallengeController = {
   CreateMemberChallenge,
   getAllMemberChallenges,
   getSingleMemberChallenge,
-  getMemberChallengesByMemberId,
+  getMyChallengesByMemberId,
   updateMemberChallengeByMemberChallengeId,
   deleteMemberChallenge,
 };

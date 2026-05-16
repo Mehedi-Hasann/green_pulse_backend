@@ -12,24 +12,22 @@ import { envVars } from "../../config/env";
 export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Response, next: NextFunction) => {
   try {
     const sessionToken = CookieUtils.getCookie(req, "better-auth.session_token");
-
+// console.log(sessionToken);
     if(!sessionToken){
       throw new AppError(status.UNAUTHORIZED,"You are not authorized");
     }
 
     if(sessionToken){
+      const rawToken = sessionToken.split(".")[0];
       const sessionExists = await prisma.session.findFirst({
         where : {
-          token : sessionToken,
-          expiresAt : {
-            gt: new Date(),
-          }
+          token : rawToken
         },
         include : {
           user : true
         }
       })
-
+// console.log(sessionExists);
       const user = sessionExists?.user;
       if(!user){
         throw new AppError(status.INTERNAL_SERVER_ERROR, "Failed to fetched User using sessionToken")
@@ -38,6 +36,11 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
       if(user?.status === UserStatus.BLOCKED || user?.status === UserStatus.DELETED){
         throw new AppError(status.NOT_ACCEPTABLE, "User is deleted or blocked")
       }
+      // console.log(authRoles);
+      // console.log(user.role)
+      // console.log(req.url);
+      // console.log("user is ",user)
+      // console.log(authRoles.includes(user.role));
 
       if(authRoles.length > 0 && !authRoles.includes(user.role)){
         throw new AppError(status.FORBIDDEN, "Forbidden access! You do not have permission to access this resource.");
@@ -66,7 +69,7 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
     if(authRoles.length > 0 && !authRoles.includes(verifiedToken?.data?.role as Role)){
       throw new AppError(status.FORBIDDEN, "Forbidden access! You do not have permission to access to this resources.");
     }
-
+// console.log("Access token is verified, user is authorized to access this resource.");
 
     next();
   } catch (error: any) {

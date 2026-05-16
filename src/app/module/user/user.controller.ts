@@ -15,8 +15,8 @@ const getAllUsers = catchAsync(async (req, res) => {
 });
 
 const getUserById = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await UserServices.getUserByIdFromDB(id as string);
+  const { id : memberId } = req.params;
+  const result = await UserServices.getUserByIdFromDB(memberId as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -26,9 +26,14 @@ const getUserById = catchAsync(async (req, res) => {
   });
 });
 
-const updateUser = catchAsync(async (req, res) => {
+const updateUserByMember = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await UserServices.updateUserInDB(id as string, req.body);
+  const payload = {
+    ...req.body,
+    ...(req.file?.path ? { profileImage: req.file.path } : {}),
+  };
+
+  const result = await UserServices.updateUserByMember(id as string, payload, req.user);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -53,6 +58,6 @@ const deleteUser = catchAsync(async (req, res) => {
 export const UserControllers = {
   getAllUsers,
   getUserById,
-  updateUser,
+  updateUserByMember,
   deleteUser,
 };

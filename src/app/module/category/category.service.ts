@@ -23,16 +23,29 @@ const getAllCategoriesFromDB = async () => {
     where: {
       isActive: true,
     },
-    include: {
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      isActive: true,
+      createdAt: true,
       _count: {
         select: { challenge: true },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
   });
-  return result;
+
+  return result.map((category) => ({
+    id: category.id,
+    name: category.name,
+    description: category.description,
+    challengesCount: category._count.challenge,
+    status: category.isActive ? "Active" : "Inactive",
+    createdAt: category.createdAt,
+  }));
 };
 
 const getCategoryByIdFromDB = async (id: string) => {
@@ -87,10 +100,10 @@ const deleteCategoryFromDB = async (id: string) => {
   }
 
   // Soft delete: set isActive to false
-  const result = await prisma.category.update({
-    where: { id },
-    data: { isActive: false },
+  const result = await prisma.category.delete({
+    where: { id }
   });
+  // console.log(result)
 
   return result;
 };
@@ -101,4 +114,4 @@ export const CategoryService = {
   getCategoryByIdFromDB,
   updateCategoryInDB,
   deleteCategoryFromDB,
-};
+};

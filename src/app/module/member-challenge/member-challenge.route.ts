@@ -16,11 +16,11 @@ router.post(
 
 router.get("/", MemberChallengeController.getAllMemberChallenges); //ok
 
-router.get("/:id", MemberChallengeController.getSingleMemberChallenge); //ok
+router.get("/",checkAuth(Role.MEMBER) ,MemberChallengeController.getSingleMemberChallenge);
 
 router.get(
-  "/member/:memberId",
-  MemberChallengeController.getMemberChallengesByMemberId
+  "/my-challenge",checkAuth(Role.MEMBER),
+  MemberChallengeController.getMyChallengesByMemberId
 ); //ok
 
 router.patch(

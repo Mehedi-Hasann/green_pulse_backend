@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import { Prisma, Submission, Role } from "../../../generated/prisma";
 import { prisma } from "../../lib/prisma";
@@ -57,17 +58,6 @@ const createSubmission = async (payload: ISubmissionCreateInput, userId : string
       } as Prisma.SubmissionUncheckedCreateInput,
     });
 
-    await tx.member.update({
-      where: {
-        id: member.id,
-      },
-      data: {
-        totalPoints: {
-          increment: challenge.pointsPerDay,
-        },
-      },
-    });
-
     await tx.memberChallenge.update({
       where : {
         id : payload.memberChallengeId
@@ -100,7 +90,7 @@ const getAllSubmissions = async (queryParams: IQueryParams) => {
     .execute();
 };
 
-const getSubmissionById = async (id: string, user: any) => {
+const getSubmissionById = async (id: string) => {
   const submission = await prisma.submission.findUnique({
     where: { id },
     include: { member: true, challenge: true, memberChallenge: true },
@@ -113,11 +103,29 @@ const getSubmissionById = async (id: string, user: any) => {
   return submission;
 };
 
-const getSubmissionsByMemberId = async (memberId: string, queryParams: IQueryParams, user: any) => {
-  
+const getSubmissionsByMemberId = async (memberId: string) => {
+  const result = await prisma.submission.findMany({
+    where : {
+      memberId
+    },
+    include : {
+      challenge: true,
+      memberChallenge: true
+    }
+  })
 
-  queryParams.memberId = memberId;
-  return getAllSubmissions(queryParams);
+  // Map the data to include the requested fields
+  const mappedResult = result.map(submission => ({
+    id: submission.id,
+    ChallengeName: submission.challenge?.title,
+    SubmissionDate: submission.submittedDate,
+    Status: submission.status,
+    PointsAchieved: submission.memberChallenge?.pointsAchieved || 0,
+    feedBack: submission.feedBack,
+    proofs: submission.proofs
+  }))
+
+  return mappedResult;
 };
 
 const getSubmissionsByChallengeId = async (challengeId: string, queryParams: IQueryParams) => {

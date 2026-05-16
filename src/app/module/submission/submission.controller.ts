@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import { Request, Response } from "express";
 import { catchAsync } from "../../shared/catchAsync";
@@ -35,7 +36,7 @@ const getAllSubmissions = catchAsync(async (req: Request, res: Response) => {
 
 const getSubmissionById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await SubmissionService.getSubmissionById(id as string, req.user);
+  const result = await SubmissionService.getSubmissionById(id as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -47,21 +48,19 @@ const getSubmissionById = catchAsync(async (req: Request, res: Response) => {
 
 const getSubmissionsByMemberId = catchAsync(async (req: Request, res: Response) => {
   const { memberId } = req.params;
-  const result = await SubmissionService.getSubmissionsByMemberId(memberId as string, req.query as IQueryParams, req.user);
+  const result = await SubmissionService.getSubmissionsByMemberId(memberId as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
     message: "Member submissions fetched successfully",
-    meta: result.meta,
-    data: result.data,
+    data: result,
   });
 });
 
 const getSubmissionsByChallengeId = catchAsync(async (req: Request, res: Response) => {
   const { challengeId } = req.params;
-  console.log("HIIIIIIII")
-  console.log(challengeId)
+
   const result = await SubmissionService.getSubmissionsByChallengeId(challengeId as string, req.query as IQueryParams);
 
   sendResponse(res, {

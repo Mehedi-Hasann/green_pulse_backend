@@ -1,103 +1,115 @@
+
 import status from "http-status";
-import { Role, UserStatus } from "../../../generated/prisma";
+import { Prisma, Role, UserStatus } from "../../../generated/prisma";
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 
-const getAllAdminsFromDB = async () => {
-  const result = await prisma.admin.findMany();
-  return result;
+type UpdateUserFromAdminPayload = {
+  name?: string;
+  email?: string;
+  role?: string;
+  status?: string;
 };
 
-const getAdminByIdFromDB = async (id: string) => {
-  const result = await prisma.admin.findUnique({
-    where: {
-      id
-    }
-  });
-  return result;
+const normalizeRole = (role?: string): Role | undefined => {
+  if (!role) return undefined;
+  const normalized = role.trim().replace(/\s+/g, "_").toUpperCase();
+  return Object.values(Role).includes(normalized as Role) ? (normalized as Role) : undefined;
 };
 
-const updateAdminInDB = async (id: string, payload: any) => {
+const normalizeStatus = (statusValue?: string): UserStatus | undefined => {
+  if (!statusValue) return undefined;
+  const normalized = statusValue.trim().replace(/\s+/g, "_").toUpperCase();
+  return Object.values(UserStatus).includes(normalized as UserStatus)
+    ? (normalized as UserStatus)
+    : undefined;
+};
 
-  const adminData = await prisma.admin.findUnique({
-    where: { id }
+const updateUserByAdmin = async (userId: string, payload: UpdateUserFromAdminPayload) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      member: true,
+      admin: true,
+      superAdmin: true,
+    },
   });
+  console.log(userId)
 
-  if (!adminData) {
-    throw new AppError(status.NOT_FOUND, "Admin does not exist.");
+  if (!user) {
+    throw new AppError(status.NOT_FOUND, "User is not exists");
   }
 
-  const result = await prisma.$transaction(async (tx) => {
+  const newRole = normalizeRole(payload.role) ?? user.role;
+  const newStatus = normalizeStatus(payload.status) ?? user.status;
 
-    // update user table
-    await tx.user.update({
-      where: {
-        id: adminData.userId
-      },
-      data: {
-        name: payload.name,
-        image: payload.profilePhoto
+  const updateData: Prisma.UserUpdateInput = {};
+  if (payload.name !== undefined) updateData.name = payload.name;
+  if (payload.email !== undefined) updateData.email = payload.email;
+  if (payload.role !== undefined) updateData.role = newRole;
+  if (payload.status !== undefined) {
+    updateData.status = newStatus;
+    if (newStatus === UserStatus.DELETED) {
+      updateData.isDeleted = true;
+    }
+  }
+
+  await prisma.$transaction(async (tx) => {
+    if (user.role === Role.ADMIN && newRole === Role.MEMBER) {
+      if (!user.admin?.id) {
+        throw new AppError(status.BAD_REQUEST, "Admin profile not found for user");
       }
-    });
 
-    // update admin table
-    const updatedAdmin = await tx.admin.update({
-      where: {
-        id
-      },
-      data: payload
-    });
+      await tx.admin.delete({ where: { id: user.admin.id } });
+      await tx.member.create({
+        data: {
+          userId: user.id,
+          name: payload.name ?? user.name,
+          profilePhoto: user.admin?.profilePhoto ?? user.image ?? null,
+          contactNumber: user.admin?.phone ?? null,
+          gender: user.admin?.gender ?? null,
+        },
+      });
+    } else if (user.role === Role.MEMBER && newRole === Role.ADMIN) {
+      if (!user.member?.id) {
+        throw new AppError(status.BAD_REQUEST, "Member profile not found for user");
+      }
 
-    return updatedAdmin;
+      await tx.member.delete({ where: { id: user.member.id } });
+      await tx.admin.create({
+        data: {
+          userId: user.id,
+          name: payload.name ?? user.name,
+          email: payload.email ?? user.email,
+          profilePhoto: user.member?.profilePhoto ?? user.image ?? null,
+          phone: user.member?.contactNumber ?? null,
+          gender: user.member?.gender ?? null,
+        },
+      });
+    } else if (newRole === Role.ADMIN && user.admin) {
+      const adminData: Prisma.AdminUpdateInput = {};
+      if (payload.name !== undefined) adminData.name = payload.name;
+      if (payload.email !== undefined) adminData.email = payload.email;
+      if (Object.keys(adminData).length > 0) {
+        await tx.admin.update({ where: { id: user.admin.id }, data: adminData });
+      }
+    } else if (newRole === Role.MEMBER && user.member) {
+      const memberData: Prisma.MemberUpdateInput = {};
+      if (payload.name !== undefined) memberData.name = payload.name;
+      if (Object.keys(memberData).length > 0) {
+        await tx.member.update({ where: { id: user.member.id }, data: memberData });
+      }
+    }
+
+    await tx.user.update({ where: { id: userId }, data: updateData });
   });
 
-  return result;
-};
-
-const deleteAdminFromDB = async (id: string) => {
-  const result = await prisma.$transaction(async (tx) => {
-    const admin = await tx.admin.findUnique({
-      where : {
-        id
-      }
-    })
-    console.log(admin)
-    if(!admin){
-      throw new AppError(status.NOT_FOUND, "Admin is not Exists");
-    }
-    const user = await tx.user.findUnique({
-      where: {
-        id : admin.userId
-      },
-    });
-
-    if (!user) {
-      throw new AppError(status.NOT_FOUND, "Admin not found");
-    }
-
-    await tx.user.update({
-      where: {
-        id: admin.userId,
-      },
-      data: {
-        isDeleted: true,
-        status : UserStatus.DELETED
-      },
-    });
-    await tx.admin.delete({
-      where : {
-        id
-      }
-    })
-
-    return user;
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: { member: true, admin: true, superAdmin: true },
   });
-  return result;
 };
 
 export const AdminServices = {
-  getAllAdminsFromDB,
-  getAdminByIdFromDB,
-  updateAdminInDB,
-  deleteAdminFromDB,
+  updateUserByAdmin,
 };

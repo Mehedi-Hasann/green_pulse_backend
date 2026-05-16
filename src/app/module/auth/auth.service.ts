@@ -143,6 +143,8 @@ const getMe = async(user : IRequestUser) => {
   if(!isUserExists){
     throw new AppError(status.NOT_FOUND, "User not found");
   }
+
+  return isUserExists;
 }
 
 const changePassword = async(payload : IChangePassword, sessionToken : string) => {
@@ -277,7 +279,26 @@ const resetPassword = async(email: string, otp: string, newPassword: string) => 
   })
 }
 
+const getSession = async (sessionToken: string) => {
+  if (!sessionToken) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid session token");
+  }
+
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
+  });
+
+  if (!session) {
+    throw new AppError(status.UNAUTHORIZED, "Unable to retrieve session");
+  }
+
+  return {...session};
+};
+
 const googleLoginSuccess = async(session: Record<string,any>) => {
+  console.log("Hi brother")
   const isMemberExists = await prisma.member.findUnique({
     where : {
       userId : session.user.id
@@ -288,7 +309,7 @@ const googleLoginSuccess = async(session: Record<string,any>) => {
     await prisma.member.create({
       data : {
         userId : session.user.id,
-        name : session.user.name
+        name: session.user.name
       }
     })
   }
@@ -308,5 +329,5 @@ const googleLoginSuccess = async(session: Record<string,any>) => {
 }
 
 export const AuthServices = {
-  registerMember, loginUser, getMe, changePassword, logoutUser, verifyEmail, forgetPassword, resetPassword, googleLoginSuccess
+  registerMember, loginUser, getMe, getSession, changePassword, logoutUser, verifyEmail, forgetPassword, resetPassword, googleLoginSuccess
 } 

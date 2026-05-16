@@ -2,10 +2,15 @@ import status from "http-status";
 import { Request, Response } from "express";
 import { catchAsync } from "../../shared/catchAsync";
 import { sendResponse } from "../../shared/sendResponse";
+import { IQueryParams } from "../../interfaces/query.interface";
 import { ChallengeService } from "./challenge.service";
 
 const createChallenge = catchAsync(async (req: Request, res: Response) => {
-  const result = await ChallengeService.createChallengeIntoDB(req.body);
+  const payload = {
+      ...req.body,
+      image : req.file?.path
+  }
+  const result = await ChallengeService.createChallengeIntoDB(payload);
 
   sendResponse(res, {
     httpStatusCode: status.CREATED,
@@ -15,8 +20,8 @@ const createChallenge = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllChallenges = catchAsync(async (_req: Request, res: Response) => {
-  const result = await ChallengeService.getAllChallengesFromDB();
+const getAllChallenges = catchAsync(async (req: Request, res: Response) => {
+  const result = await ChallengeService.getAllChallengesFromDB(req.query as IQueryParams);
 
   sendResponse(res, {
     httpStatusCode: status.OK,

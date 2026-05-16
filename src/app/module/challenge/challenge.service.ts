@@ -2,6 +2,8 @@ import status from "http-status";
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateChallengePayload, IUpdateChallengePayload } from "./challenge.interface";
+import { IQueryParams } from "../../interfaces/query.interface";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const createChallengeIntoDB = async (payload: ICreateChallengePayload) => {
   const existing = await prisma.challenge.findFirst({
@@ -28,17 +30,84 @@ const createChallengeIntoDB = async (payload: ICreateChallengePayload) => {
   return result;
 };
 
-const getAllChallengesFromDB = async () => {
-  const result = await prisma.challenge.findMany({
-    include: {
+const getAllChallengesFromDB = async (queryParams: IQueryParams = {}) => {
+  const normalizedQuery: IQueryParams = { ...queryParams };
+
+  if (typeof normalizedQuery.type === "string") {
+    const typeValue = normalizedQuery.type.toLowerCase();
+
+    if (typeValue === "paid") {
+      normalizedQuery.isPaid = "true";
+    } else if (typeValue === "free") {
+      normalizedQuery.isPaid = "false";
+    } else if (["upcoming", "active", "completed", "cancelled"].includes(typeValue)) {
+      normalizedQuery.status = typeValue.toUpperCase();
+    }
+
+    delete normalizedQuery.type;
+  }
+
+  if (typeof normalizedQuery.sortBy === "string") {
+    let sortBy = normalizedQuery.sortBy;
+    let sortOrder: "asc" | "desc" = "desc";
+
+    if (sortBy.startsWith("-")) {
+      sortOrder = "desc";
+      sortBy = sortBy.slice(1);
+    } else if (sortBy.startsWith("+")) {
+      sortOrder = "asc";
+      sortBy = sortBy.slice(1);
+    }
+
+    switch (sortBy.toLowerCase()) {
+      case "points-high":
+        sortBy = "pointsPerDay";
+        sortOrder = "desc";
+        break;
+      case "points-low":
+        sortBy = "pointsPerDay";
+        sortOrder = "asc";
+        break;
+      case "newest":
+        sortBy = "createdAt";
+        sortOrder = "desc";
+        break;
+      case "oldest":
+        sortBy = "createdAt";
+        sortOrder = "asc";
+        break;
+      case "points":
+      case "pointsperday":
+        sortBy = "pointsPerDay";
+        break;
+      case "createdat":
+        sortBy = "createdAt";
+        break;
+      default:
+        break;
+    }
+
+    normalizedQuery.sortBy = sortBy;
+    normalizedQuery.sortOrder = sortOrder;
+  }
+
+  const challengeQueryBuilder = new QueryBuilder(prisma.challenge, normalizedQuery, {
+    searchableFields: ["title", "description", "category.name"],
+    filterableFields: ["categoryId", "status", "isPaid"],
+  });
+
+  return await challengeQueryBuilder
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .include({
       category: true,
       _count: {
         select: { memberChallenges: true, submission: true },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-  return result;
+    })
+    .execute();
 };
 
 const getChallengeByIdFromDB = async (id: string) => {

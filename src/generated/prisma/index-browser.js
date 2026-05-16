@@ -195,6 +195,7 @@ exports.Prisma.CategoryScalarFieldEnum = {
 exports.Prisma.ChallengeScalarFieldEnum = {
   id: 'id',
   categoryId: 'categoryId',
+  image: 'image',
   title: 'title',
   description: 'description',
   duration: 'duration',
@@ -208,6 +209,7 @@ exports.Prisma.ChallengeScalarFieldEnum = {
 
 exports.Prisma.MemberScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   name: 'name',
   totalPoints: 'totalPoints',
   profilePhoto: 'profilePhoto',
@@ -216,8 +218,7 @@ exports.Prisma.MemberScalarFieldEnum = {
   isDeleted: 'isDeleted',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  userId: 'userId'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.MemberChallengeScalarFieldEnum = {

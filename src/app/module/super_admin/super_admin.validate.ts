@@ -49,6 +49,17 @@ const updateSubmissionStatusSchema = z.object({
   status: z.enum(SubmissionStatus,"Status is required" ),
 });
 
+const updateUserSchema = z.object({
+  email: z.email().optional(),
+  role: z.enum(Object.values(Role) as [string, ...string[]]).optional(),
+  status: z.enum(Object.values(UserStatus) as [string, ...string[]]).optional(),
+  isDeleted: z.boolean().optional(),
+  name: z.string().optional(),
+  profileImage: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  gender: z.enum(Object.values(Gender) as [string, ...string[]]).optional(),
+});
+
 export const SuperAdminValidations = {
   updateAdminSchema,
   updateMemberSchema,
@@ -59,4 +70,5 @@ export const SuperAdminValidations = {
   createCategorySchema,
   updateCategorySchema,
   updateSubmissionStatusSchema,
+  updateUserSchema
 };

@@ -88,8 +88,9 @@ const updateMember = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteMember = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await SuperAdminService.deleteMember(id as string);
+  const { id: userId } = req.params;
+  // console.log("id is ",userId)
+  const result = await SuperAdminService.deleteMember(userId as string);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
@@ -138,6 +139,8 @@ const getAllChallenges = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createChallenge = catchAsync(async (req: Request, res: Response) => {
+
+  console.log("Req Body :", req.body);
   const result = await SuperAdminService.createChallengeIntoDB(req.body);
   sendResponse(res, {
     httpStatusCode: status.CREATED,
@@ -160,7 +163,7 @@ const getChallengeById = catchAsync(async (req: Request, res: Response) => {
 
 const updateChallenge = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log("Req Body :", req.body);
+  // console.log("Req Body :", req.body);
   const result = await SuperAdminService.updateChallenge(id as string, req.body);
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -263,6 +266,17 @@ const getAllSubmissions = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getPendingSubmissions = catchAsync(async (req: Request, res: Response) => {
+  const result = await SuperAdminService.getPendingSubmissions(req.query as IQueryParams);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Pending submissions fetched successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 const getSubmissionById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await SuperAdminService.getSubmissionById(id as string);
@@ -320,6 +334,21 @@ const getDashboardSummary = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const UpdateSuperAdminBySuperAdmin = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = {
+    ...req.body,
+    ...(req.file?.path ? { profileImage: req.file.path } : {}),
+  };
+  const result = await SuperAdminService.UpdateSuperAdminBySuperAdmin(id as string, payload);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Super Admin updated successfully",
+    data: result,
+  });
+});
+
 export const SuperAdminController = {
   getAllAdmins,
   getAdminById,
@@ -343,9 +372,11 @@ export const SuperAdminController = {
   getAllPayments,
   getPaymentById,
   getAllSubmissions,
+  getPendingSubmissions,
   getSubmissionById,
   updateSubmissionStatus,
   getAnalytics,
   getLeaderboard,
   getDashboardSummary,
+  UpdateSuperAdminBySuperAdmin
 };

@@ -17,7 +17,6 @@ const CreateMemberChallenge = async (userId: string, challengeId: string) => {
         member : true
       }
   });
-  console.log("HI")
   if(!user?.member){
     throw new AppError(status.NOT_FOUND, "User is not Exits")
   }
@@ -47,7 +46,6 @@ const CreateMemberChallenge = async (userId: string, challengeId: string) => {
     throw new AppError(status.CONFLICT, "Member has already joined this challenge");
   }
 
-  console.log("HIII")
   const result = await prisma.memberChallenge.create({
     data: { memberId, challengeId },
     include: {
@@ -55,7 +53,6 @@ const CreateMemberChallenge = async (userId: string, challengeId: string) => {
       challenge: { include: { category: true } },
     },
   });
-  console.log("HIII 2")
 
   return result;
 };
@@ -98,10 +95,22 @@ const getSingleMemberChallenge = async (id: string) => {
   return result;
 };
 
-const getMemberChallengesByMemberId = async (memberId: string, queryParams: IQueryParams) => {
-  const member = await prisma.member.findUnique({ where: { id: memberId } });
+const getMyChallengesByMemberId = async (userId: string, queryParams: IQueryParams) => {
+  const user = await prisma.user.findFirst({ 
+    where: { 
+      id: userId,   
+    },
+    include : {
+        member : true
+      }
+  });
+  if(!user?.member){
+    throw new AppError(status.NOT_FOUND, "User is not Exits")
+  }
+  const member = await prisma.member.findUnique({ where: { id: user?.member.id } });
+  const memberId = member?.id;
   if (!member) {
-    throw new AppError(status.NOT_FOUND, "Member not found");
+    throw new AppError(status.NOT_FOUND, "Member not found boss");
   }
 
   const builder = new QueryBuilder(prisma.memberChallenge, queryParams, {
@@ -178,7 +187,7 @@ export const MemberChallengeService = {
   CreateMemberChallenge,
   getAllMemberChallenges,
   getSingleMemberChallenge,
-  getMemberChallengesByMemberId,
+  getMyChallengesByMemberId,
   updateMemberChallengeByMemberChallengeId,
   deleteMemberChallenge,
 };

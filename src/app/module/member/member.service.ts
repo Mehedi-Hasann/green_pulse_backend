@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
@@ -130,6 +131,64 @@ const getMemberPaymentsFromDB = async (memberId: string) => {
   return result;
 };
 
+const getMemberStatsFromDB = async (userId: string) => {
+  // Find member by userId
+  const member = await prisma.member.findUnique({
+    where: { userId, isDeleted: false },
+  });
+
+  if (!member) {
+    throw new AppError(status.NOT_FOUND, "Member not found");
+  }
+
+  const memberId = member.id;
+
+  // Total points
+  const totalPoints = member.totalPoints;
+
+  // Active challenges count: challenges where memberChallenge exists and challenge.status == ACTIVE
+  const activeChallengesCount = await prisma.memberChallenge.count({
+    where: {
+      memberId,
+      challenge: {
+        status: 'ACTIVE'
+      }
+    }
+  });
+
+  // Rank: number of members with higher points +1
+  const higherPointsCount = await prisma.member.count({
+    where: {
+      totalPoints: {
+        gt: totalPoints
+      },
+      isDeleted: false
+    }
+  });
+
+  const rank = higherPointsCount + 1;
+
+  const streak = await prisma.submission.count({
+    where: {
+      memberId,
+    },
+  });
+
+  const memberChallengeStatus = await prisma.memberChallenge.findMany({
+    where : {
+      memberId : memberId
+    }
+  })
+
+  return {
+    totalPoints,
+    activeStreak: streak,
+    activeChallengesCount,
+    rank,
+    memberChallengeStatus
+  };
+};
+
 export const MemberServices = {
   getAllMembersFromDB,
   getMemberByIdFromDB,
@@ -138,4 +197,5 @@ export const MemberServices = {
   getMemberChallengesFromDB,
   getMemberSubmissionsFromDB,
   getMemberPaymentsFromDB,
+  getMemberStatsFromDB,
 };

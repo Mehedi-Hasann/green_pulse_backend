@@ -18,7 +18,7 @@ const registerMember = catchAsync(
       ...req.body,
       image : req.file?.path
     }
-    console.log(req.body)
+    // console.log(req.body)
     // if(!req.body.user?.role){
     //   req.body.user.role = Role.MEMBER;
     // }
@@ -72,11 +72,39 @@ const loginUser = catchAsync(
   }
 )
 
+const getMe = catchAsync(
+  async (req: Request, res: Response) => {
+    console.log("User in getMe controller ", req.user);
+    const result = await AuthServices.getMe(req.user as any);
+
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "User fetched successfully",
+      data: result
+    });
+  }
+)
+
+const getSession = catchAsync(
+  async (req: Request, res: Response) => {
+    const sessionToken = req.cookies["better-auth.session_token"];
+    const result = await AuthServices.getSession(sessionToken);
+
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: "Session retrieved successfully",
+      data: result
+    });
+  }
+)
+
 const changePassword = catchAsync(
   async (req: Request, res: Response) => {
     const payload = req.body;
     const betterAuthSessionToken = req.cookies["better-auth.session_token"];
-    console.log(betterAuthSessionToken);
+    // console.log(betterAuthSessionToken);
 
     const result = await AuthServices.changePassword(payload, betterAuthSessionToken);
 
@@ -95,17 +123,18 @@ const logoutUser = catchAsync(
 
     const result = await AuthServices.logoutUser(betterAuthSessionToken);
 
-    CookieUtils.clearCookie(res, envVars.ACCESS_TOKEN_SECRET, {
-      httpOnly : true,
-      secure : true,
-      sameSite : "none"
-    })
+    CookieUtils.clearCookie(res, "accessToken", {
+      httpOnly: true,
+      secure: envVars.NODE_ENV === "production",
+      sameSite: "none"
+    });
 
-    CookieUtils.clearCookie(res,'better-auth.session_token',{
-      httpOnly : true,
-      secure : true,
-      sameSite : "none"
-    })
+    CookieUtils.clearCookie(res, 'better-auth.session_token', {
+      httpOnly: true,
+      secure: envVars.NODE_ENV === "production",
+      sameSite: "none"
+    });
+
 
     sendResponse(res, {
       httpStatusCode : status.OK,
@@ -170,7 +199,7 @@ const googleLogin = catchAsync(
     const encodedRedirectPath = encodeURIComponent(redirectPath as string);
     
     const callbackURL = `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
-    // console.log(callbackURL);
+    console.log("Callback URL is: ", callbackURL);
 
     res.render("googleRedirect",{
       callbackURL,
@@ -184,17 +213,18 @@ const googleLoginSuccess = catchAsync(
     const redirectPath = req.query.redirect as string || "/dashboard";
 
     const sessionToken = req.cookies["better-auth.session_token"];
+    console.log("session token is ", sessionToken);
 
     if(!sessionToken){
       return res.redirect(`${envVars.FRONTEND_URL}/login?error=oauth_failed`);
     }
-
+console.log("Session token received from cookie: ", sessionToken);
     const session = await auth.api.getSession({
       headers : {
         "Cookie" : `better-auth.session_token=${sessionToken}`
       }
     })
-
+console.log("hi from ",session);
     if(!session){
       res.redirect(`${envVars.FRONTEND_URL}/login?error=no_session_found`);
     }
@@ -202,7 +232,7 @@ const googleLoginSuccess = catchAsync(
     if(session && !session.user){
       return res.redirect(`${envVars.FRONTEND_URL}/login?error=no_user_found`);
     }
-
+console.log("Session from better-auth ", session);
     const result = await AuthServices.googleLoginSuccess(session as any);
 
     const {accessToken} = result;
@@ -224,6 +254,6 @@ const handlerOAuthError = catchAsync(
 )
 
 export const AuthController = {
-  registerMember, loginUser, changePassword, logoutUser, verifyEmail, forgetPassword, resetPassword,googleLogin,
+  registerMember, loginUser, getMe, getSession, changePassword, logoutUser, verifyEmail, forgetPassword, resetPassword, googleLogin,
   googleLoginSuccess, handlerOAuthError
 }
