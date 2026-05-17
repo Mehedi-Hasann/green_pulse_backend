@@ -1,4 +1,4 @@
-import { Role } from "../../../generated/prisma";
+import { Role, UserStatus } from "../../../generated/prisma";
 
 export interface IRequestUser {
   userId : string;
@@ -22,4 +22,18 @@ export interface ILoginUserPayload {
 export interface IChangePassword {
   currentPassword : string,
   newPassword : string
+}
+
+export interface IGoogleSession {
+  user: {
+    id: string;
+    name: string;
+    role: Role;
+    email: string;
+    status: UserStatus;
+    isDeleted: boolean;
+    emailVerified: boolean;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
 }

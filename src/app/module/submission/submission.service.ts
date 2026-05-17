@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import status from "http-status";
 import { Prisma, Submission, Role } from "../../../generated/prisma";
 import { prisma } from "../../lib/prisma";
@@ -6,6 +6,7 @@ import AppError from "../../errorHelpers/AppError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { IQueryParams } from "../../interfaces/query.interface";
 import { ISubmissionCreateInput } from "./submission.interface";
+import { IRequestUser } from "../auth/auth.interface";
 
 const createSubmission = async (payload: ISubmissionCreateInput, userId : string) => {
   const member = await prisma.member.findUnique({
@@ -133,7 +134,7 @@ const getSubmissionsByChallengeId = async (challengeId: string, queryParams: IQu
   return getAllSubmissions(queryParams);
 };
 
-const updateSubmissionInDB = async (id: string, payload: Partial<Submission>, user: any) => {
+const updateSubmissionInDB = async (id: string, payload: Partial<Submission>, user: IRequestUser) => {
   const submission = await prisma.submission.findUnique({ where: { id } });
 
   if (!submission) {

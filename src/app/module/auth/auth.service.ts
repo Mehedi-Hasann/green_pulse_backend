@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import status from "http-status";
 import { Role } from "../../../generated/prisma";
 import AppError from "../../errorHelpers/AppError";
@@ -6,7 +6,7 @@ import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { UserStatus } from "../../../generated/prisma";
 import { tokenUtils } from "../../utils/token";
-import { IChangePassword, ILoginUserPayload, IRegisterMemberPayload, IRequestUser } from "./auth.interface";
+import { IChangePassword, IGoogleSession, ILoginUserPayload, IRegisterMemberPayload, IRequestUser } from "./auth.interface";
 
 
 const registerMember = async (payload: IRegisterMemberPayload) => {
@@ -80,7 +80,7 @@ const registerMember = async (payload: IRegisterMemberPayload) => {
       accessToken,
       member,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log("Transaction Error : ", error);
     await prisma.user.delete({
       where: {
@@ -297,7 +297,7 @@ const getSession = async (sessionToken: string) => {
   return {...session};
 };
 
-const googleLoginSuccess = async(session: Record<string,any>) => {
+const googleLoginSuccess = async(session: IGoogleSession) => {
   console.log("Hi brother")
   const isMemberExists = await prisma.member.findUnique({
     where : {

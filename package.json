@@ -10,8 +10,8 @@
     "studio": "prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsup",
-   "start": "node dist/server.cjs"
+    "build": "prisma generate && tsc",
+    "start": "node dist/server.cjs"
   },
   "keywords": [],
   "author": "",

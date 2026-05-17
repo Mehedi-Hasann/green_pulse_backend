@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NextFunction, Request, Response } from "express";
 import { CookieUtils } from "../utils/cookie";
 import AppError from "../errorHelpers/AppError";
@@ -72,7 +72,7 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
 // console.log("Access token is verified, user is authorized to access this resource.");
 
     next();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error);
     throw new AppError(status.INTERNAL_SERVER_ERROR,"Error occur in checkAuth Middleware.")
   }

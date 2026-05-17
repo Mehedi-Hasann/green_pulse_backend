@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import status from "http-status";
 import { Role, UserStatus } from "../../../generated/prisma";
 import AppError from "../../errorHelpers/AppError";
@@ -46,7 +46,7 @@ const getUserByIdFromDB = async (memberId: string) => {
 
 const updateUserByMember = async (
   id: string,
-  payload: any,
+  payload: Record<string, unknown>,
   currentUser?: { userId: string; role: Role; email: string }
 ) => {
   if (!currentUser || currentUser.role !== Role.MEMBER) {
@@ -88,14 +88,14 @@ const updateUserByMember = async (
     );
   }
 
-  const userData: any = { ...payload };
+  const userData: Record<string, unknown> = { ...payload };
 
   if (payload.profileImage !== undefined) {
     userData.image = payload.profileImage;
     delete userData.profileImage;
   }
 
-  const profileUpdate: any = {};
+  const profileUpdate: Record<string, unknown> = {};
   if (payload.name !== undefined) {
     profileUpdate.name = payload.name;
   }
@@ -103,7 +103,7 @@ const updateUserByMember = async (
     profileUpdate.profilePhoto = payload.profileImage;
   }
 
-  const relationUpdate: any = {};
+  const relationUpdate: Record<string, unknown> = {};
   if (existing.member && Object.keys(profileUpdate).length > 0) {
     relationUpdate.member = { update: profileUpdate };
   }

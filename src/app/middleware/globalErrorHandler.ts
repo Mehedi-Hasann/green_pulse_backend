@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { envVars } from "../../config/env";
 import status from "http-status";
@@ -10,7 +8,7 @@ import AppError from "../errorHelpers/AppError";
 import { deleteFileFromCloudinary } from "../../config/cloudinary.config";
 
 export const globalErrorHandler = async (
-  err: any,
+  err: unknown,
   req: Request,
   res: Response,
   next: NextFunction
@@ -70,8 +68,8 @@ export const globalErrorHandler = async (
     success: false,
     message,
     errorSources,
-    stack: envVars.NODE_ENV === "development" ? err?.stack : undefined,
+    stack: envVars.NODE_ENV === "development" ? (err as Error)?.stack : undefined,
   };
 
   return res.status(statusCode).json(errorResponse);
-};
+};

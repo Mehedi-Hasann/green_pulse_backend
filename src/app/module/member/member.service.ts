@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import status from "http-status";
 import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
-import { UserStatus } from "../../../generated/prisma";
+import { UserStatus, Prisma } from "../../../generated/prisma";
 
 const getAllMembersFromDB = async () => {
   const result = await prisma.member.findMany({
@@ -29,7 +29,7 @@ const getMemberByIdFromDB = async (id: string) => {
   return result;
 };
 
-const updateMemberInDB = async (id: string, payload: any) => {
+const updateMemberInDB = async (id: string, payload: Prisma.MemberUncheckedUpdateInput) => {
   const memberData = await prisma.member.findUnique({
     where: {
       id,

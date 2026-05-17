@@ -1,10 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import { Prisma, Role, UserStatus, SubmissionStatus } from "../../../generated/prisma";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../errorHelpers/AppError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { IQueryParams } from "../../interfaces/query.interface";
+import { IUpdateSuperAdminPayload } from "./super_admin.interface";
 import status from "http-status";
 
 
@@ -87,7 +88,7 @@ const getMemberById = async (id: string) => {
   return member;
 };
 
-const updateMember = async (id: string, payload: any) => {
+const updateMember = async (id: string, payload: Prisma.MemberUncheckedUpdateInput) => {
   const member = await prisma.member.findUnique({ where: { id } });
   if (!member) throw new AppError(status.NOT_FOUND, "Member not found");
 
@@ -263,7 +264,7 @@ const getAllChallenges = async (queryParams: IQueryParams) => {
     .execute();
 };
 
-const createChallengeIntoDB = async (payload: any) => {
+const createChallengeIntoDB = async (payload: Prisma.ChallengeUncheckedCreateInput) => {
   return await prisma.challenge.create({
     data: payload,
   });
@@ -286,7 +287,7 @@ const getChallengeById = async (id: string) => {
   };
 };
 
-const updateChallenge = async (id: string, payload: any) => {
+const updateChallenge = async (id: string, payload: Prisma.ChallengeUncheckedUpdateInput) => {
   const challenge = await prisma.challenge.findUnique({ where: { id } });
   if (!challenge) throw new AppError(status.NOT_FOUND, "Challenge not found");
 
@@ -321,13 +322,13 @@ const getAllCategories = async (queryParams: IQueryParams) => {
     .execute();
 };
 
-const createCategoryIntoDB = async (payload: any) => {
+const createCategoryIntoDB = async (payload: Prisma.CategoryUncheckedCreateInput) => {
   return await prisma.category.create({
     data: payload,
   });
 };
 
-const updateCategory = async (id: string, payload: any) => {
+const updateCategory = async (id: string, payload: Prisma.CategoryUncheckedUpdateInput) => {
   const category = await prisma.category.findUnique({ where: { id } });
   if (!category) throw new AppError(status.NOT_FOUND, "Category not found");
 
@@ -741,7 +742,7 @@ const getDashboardSummary = async () => {
   };
 };
 
-const UpdateSuperAdminBySuperAdmin = async (id: string, payload: any) => {
+const UpdateSuperAdminBySuperAdmin = async (id: string, payload: IUpdateSuperAdminPayload) => {
   const superAdminUser = await prisma.user.findUnique({
     where: { id },
     include: { superAdmin: true },
