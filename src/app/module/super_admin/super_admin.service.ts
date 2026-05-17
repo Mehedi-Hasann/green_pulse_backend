@@ -762,8 +762,6 @@ const UpdateSuperAdminBySuperAdmin = async (id: string, payload: IUpdateSuperAdm
         role: payload.role,
         name: payload.name,
         image: payload.profileImage,
-        phoneNumber: payload.phoneNumber,
-        gender: payload.gender,
       },
     });
 
@@ -773,6 +771,7 @@ const UpdateSuperAdminBySuperAdmin = async (id: string, payload: IUpdateSuperAdm
         name: payload.name ?? superAdminProfile.name,
         profilePhoto: payload.profileImage ?? superAdminProfile.profilePhoto,
         gender: payload.gender ?? superAdminProfile.gender,
+        phone: payload.phoneNumber ?? superAdminProfile.phone,
       },
     });
   });
