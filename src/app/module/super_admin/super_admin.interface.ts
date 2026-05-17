@@ -1,4 +1,4 @@
-import { Role } from "../../../generated/prisma";
+import { Role, Gender } from "../../../generated/prisma";
 
 export interface IUpdateSuperAdminPayload {
   email?: string;
@@ -6,5 +6,5 @@ export interface IUpdateSuperAdminPayload {
   name?: string;
   profileImage?: string;
   phoneNumber?: string;
-  gender?: string;
+  gender?: Gender;
 }

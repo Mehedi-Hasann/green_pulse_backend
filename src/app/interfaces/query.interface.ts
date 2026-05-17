@@ -26,8 +26,8 @@ export interface PrismaCountArgs {
 }
 
 export interface PrismaModelDelegate<T = Record<string, unknown>> {
-    findMany(args?: PrismaFindManyArgs): Promise<T[]>;
-    count(args?: PrismaCountArgs): Promise<number>;
+    findMany(args?: never): Promise<T[]>;
+    count(args?: never): Promise<number>;
 }
 
 export interface IQueryParams {
