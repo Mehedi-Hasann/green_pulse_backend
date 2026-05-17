@@ -10,9 +10,6 @@ export default defineConfig({
     "@prisma/client",
     "@prisma/adapter-pg",
     "@prisma/client-runtime-utils",
-    // All generated Prisma output - resolved at runtime
-    "./src/generated/prisma",
-    "../../generated/prisma",
   ],
   noExternal: [],
 });
