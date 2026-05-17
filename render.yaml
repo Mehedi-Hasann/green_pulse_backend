@@ -1,9 +1,47 @@
 services:
   - type: web
     name: green-pulse-backend
-    runtime: node
-    buildCommand: pnpm install --frozen-lockfile && pnpm exec prisma generate && pnpm build
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: pnpm install && pnpm run build
     startCommand: node dist/server.cjs
     envVars:
       - key: NODE_ENV
         value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRES_IN
+        value: 10d
+      - key: BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN
+        value: 7d
+      - key: BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE
+        value: 7d
+      - key: EMAIL_SENDER_SMTP_USER
+        sync: false
+      - key: EMAIL_SENDER_SMTP_PASS
+        sync: false
+      - key: EMAIL_SENDER_SMTP_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_SENDER_SMTP_PORT
+        value: 465
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
