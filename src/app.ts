@@ -14,6 +14,8 @@ const app: Application = express();
 // View Engine Setup
 app.set("view engine", "ejs");
 app.set("views", path.resolve(process.cwd(), `src/app/templates`));
+console.log("FRONTEND_URL =", envVars.FRONTEND_URL);
+console.log("BETTER_AUTH_URL =", envVars.BETTER_AUTH_URL);
 
 // Standard Middlewares
 app.use(cors({
