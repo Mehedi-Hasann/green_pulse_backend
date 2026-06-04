@@ -36,6 +36,14 @@ const registerMember = async (payload: IRegisterMemberPayload) => {
               profilePhoto : data.user.image ?? null
             },
           });
+          await tx.user.update({
+            where : {
+              id : data.user.id
+            },
+            data : {
+              emailVerified : true
+            }
+          })
 
           return memberTx;
         }
@@ -222,8 +230,10 @@ const forgetPassword = async(email : string) => {
       email
     }
   })
+  console.log("User is ", isUserExists)
 
   if(!isUserExists?.emailVerified){
+    // console.log("Hi")
     throw new AppError(status.NOT_FOUND, "User not Found");
   }
 
@@ -231,11 +241,13 @@ const forgetPassword = async(email : string) => {
     throw new AppError(status.NOT_FOUND, "User not Found");
   }
 
-  await auth.api.requestPasswordResetEmailOTP({
+  const result = await auth.api.requestPasswordResetEmailOTP({
     body: {
       email
     }
   })
+
+  return result ;
 }
 
 const resetPassword = async(email: string, otp: string, newPassword: string) => {
@@ -298,7 +310,7 @@ const getSession = async (sessionToken: string) => {
 };
 
 const googleLoginSuccess = async(session: IGoogleSession) => {
-  console.log("Hi brother")
+  // console.log("Hi brother")
   const isMemberExists = await prisma.member.findUnique({
     where : {
       userId : session.user.id

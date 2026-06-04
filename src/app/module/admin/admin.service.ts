@@ -34,7 +34,7 @@ const updateUserByAdmin = async (userId: string, payload: UpdateUserFromAdminPay
       superAdmin: true,
     },
   });
-  console.log(userId)
+  // console.log(userId)
 
   if (!user) {
     throw new AppError(status.NOT_FOUND, "User is not exists");

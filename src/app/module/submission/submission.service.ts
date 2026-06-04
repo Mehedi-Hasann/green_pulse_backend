@@ -114,6 +114,7 @@ const getSubmissionsByMemberId = async (memberId: string) => {
       memberChallenge: true
     }
   })
+  // console.log(result);
 
   // Map the data to include the requested fields
   const mappedResult = result.map(submission => ({
@@ -125,6 +126,8 @@ const getSubmissionsByMemberId = async (memberId: string) => {
     feedBack: submission.feedBack,
     proofs: submission.proofs
   }))
+
+  //  console.log("Submission fetched: ", mappedResult);
 
   return mappedResult;
 };

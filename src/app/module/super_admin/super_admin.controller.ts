@@ -140,7 +140,7 @@ const getAllChallenges = catchAsync(async (req: Request, res: Response) => {
 
 const createChallenge = catchAsync(async (req: Request, res: Response) => {
 
-  console.log("Req Body :", req.body);
+  // console.log("Req Body :", req.body);
   const result = await SuperAdminService.createChallengeIntoDB(req.body);
   sendResponse(res, {
     httpStatusCode: status.CREATED,

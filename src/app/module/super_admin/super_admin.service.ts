@@ -112,7 +112,7 @@ const deleteMember = async (userId: string) => {
     where: { id: userId },
     include: { member: true },
   });
-  console.log(user)
+  // console.log(user)
   if (!user) throw new AppError(status.NOT_FOUND, "User not found");
   if (!user.member) throw new AppError(status.NOT_FOUND, "Member profile not found");
 
@@ -438,6 +438,7 @@ const updateSubmissionStatus = async (id: string, submissionStatus: SubmissionSt
     if (shouldAddPoints) {
       
       const pointsToAdd = submission.challenge?.pointsPerDay ?? 0;
+      console.log("Points to add: ", pointsToAdd);
       if (submission.member) {
         
         await tx.member.update({
@@ -452,15 +453,13 @@ const updateSubmissionStatus = async (id: string, submissionStatus: SubmissionSt
         await tx.memberChallenge.update({
           where: { id: submission.memberChallengeId },
           data: {
-            pointsAchieved: {
-              increment: pointsToAdd,
-            },
+            pointsAchieved: pointsToAdd,
           },
         });
-        console.log("Hi")
+        // console.log("Hi")
       }
     }
-console.log("Updated Submission => ", updatedSubmission)
+// console.log("Updated Submission => ", updatedSubmission)
     return updatedSubmission;
   });
 

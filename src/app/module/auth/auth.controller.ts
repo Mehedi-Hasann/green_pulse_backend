@@ -74,7 +74,7 @@ const loginUser = catchAsync(
 
 const getMe = catchAsync(
   async (req: Request, res: Response) => {
-    console.log("User in getMe controller ", req.user);
+    // console.log("User in getMe controller ", req.user);
     const result = await AuthServices.getMe(req.user as any);
 
     sendResponse(res, {
@@ -199,7 +199,7 @@ const googleLogin = catchAsync(
     const encodedRedirectPath = encodeURIComponent(redirectPath as string);
     
     const callbackURL = `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
-    console.log("Callback URL is: ", callbackURL);
+    // console.log("Callback URL is: ", callbackURL);
 
     res.render("googleRedirect",{
       callbackURL,
@@ -213,12 +213,12 @@ const googleLoginSuccess = catchAsync(
     const redirectPath = req.query.redirect as string || "/dashboard";
 
     const sessionToken = req.cookies["better-auth.session_token"];
-    console.log("session token is ", sessionToken);
+    // console.log("session token is ", sessionToken);
 
     if(!sessionToken){
       return res.redirect(`${envVars.FRONTEND_URL}/login?error=oauth_failed`);
     }
-console.log("Session token received from cookie: ", sessionToken);
+// console.log("Session token received from cookie: ", sessionToken);
     const session = await auth.api.getSession({
       headers : {
         "Cookie" : `better-auth.session_token=${sessionToken}`
