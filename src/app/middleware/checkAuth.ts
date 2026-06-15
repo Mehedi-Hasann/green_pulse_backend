@@ -36,11 +36,8 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
       if(user?.status === UserStatus.BLOCKED || user?.status === UserStatus.DELETED){
         throw new AppError(status.NOT_ACCEPTABLE, "User is deleted or blocked")
       }
-      // console.log(authRoles);
-      // console.log(user.role)
-      // console.log(req.url);
-      // console.log("user is ",user)
-      // console.log(authRoles.includes(user.role));
+      console.log("Request Role : ", authRoles);
+      console.log("User is : ",user)
 
       if(authRoles.length > 0 && !authRoles.includes(user.role)){
         throw new AppError(status.FORBIDDEN, "Forbidden access! You do not have permission to access this resource.");
@@ -74,6 +71,7 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
     next();
   } catch (error: unknown) {
     console.log(error);
+    console.log("Ami mehedi : ", req.url)
     throw new AppError(status.INTERNAL_SERVER_ERROR,"Error occur in checkAuth Middleware.")
   }
 }
