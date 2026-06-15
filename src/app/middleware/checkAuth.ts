@@ -12,7 +12,7 @@ import { envVars } from "../../config/env";
 export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Response, next: NextFunction) => {
   try {
     const sessionToken = CookieUtils.getCookie(req, "better-auth.session_token");
-// console.log(sessionToken);
+console.log("Session Token : ",sessionToken);
     if(!sessionToken){
       throw new AppError(status.UNAUTHORIZED,"You are not authorized");
     }
@@ -27,7 +27,7 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
           user : true
         }
       })
-// console.log(sessionExists);
+console.log("User Info : ",sessionExists);
       const user = sessionExists?.user;
       if(!user){
         throw new AppError(status.INTERNAL_SERVER_ERROR, "Failed to fetched User using sessionToken")
