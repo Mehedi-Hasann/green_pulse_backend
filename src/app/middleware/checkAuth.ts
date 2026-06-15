@@ -71,7 +71,7 @@ export const checkAuth = (...authRoles: Role[]) => async(req: Request, res: Resp
     next();
   } catch (error: unknown) {
     console.log(error);
-    console.log("Ami mehedi : ", req.url)
+    console.log("Ami mehedi : ", req.url, req.user)
     throw new AppError(status.INTERNAL_SERVER_ERROR,"Error occur in checkAuth Middleware.")
   }
 }
